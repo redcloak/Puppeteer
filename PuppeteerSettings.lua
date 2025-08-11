@@ -366,7 +366,7 @@ DefaultTrackedDebuffs = {
     "Enrage", -- Druid
     "Recently Bandaged", "Resurrection Sickness", "Ghost", -- Generic
     "Deafening Screech", -- Applied by mobs
-    "Power Overwhelming", "Enslave Demon"
+    "Power Overwhelming"
 }
 -- Tracked debuffs for specific classes
 DefaultClassTrackedDebuffs = {
