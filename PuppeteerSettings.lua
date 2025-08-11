@@ -129,8 +129,8 @@ function SetDefaults()
                 ["ShowItemCount"] = false
             },
             ["ShowAuraTimesAt"] = {
-                ["Short"] = 5, -- <1 min
-                ["Medium"] = 10, -- <=2 min
+                ["Short"] = 10, -- <1 min
+                ["Medium"] = 15, -- <=2 min
                 ["Long"] = 60 * 2 -- >2 min
             },
             ["CastWhen"] = "Mouse Up", -- Mouse Up, Mouse Down
@@ -329,7 +329,7 @@ DefaultTrackedHealingDebuffs = {"Mortal Strike", "Wound Poison", "Curse of the D
 -- Tracked buffs for all classes
 DefaultTrackedBuffs = {
     "Blessing of Protection", "Hand of Protection", "Divine Protection", "Divine Shield", "Divine Intervention", -- Paladin
-        "Bulwark of the Righteous", "Blessing of Sacrifice", "Hand of Sacrifice",
+        "Bulwark of the Righteous", "Blessing of Sacrifice", "Hand of Sacrifice", "Greater Blessing of Salvation", "Blessing of Salvation",
     "Power Infusion", "Spirit of Redemption", "Inner Focus", "Abolish Disease", "Power Word: Shield", -- Priest
     "Shield Wall", "Recklessness", "Last Stand", -- Warrior
     "Evasion", "Vanish", -- Rogue
@@ -342,19 +342,19 @@ DefaultTrackedBuffs = {
 }
 -- Tracked buffs for specific classes
 DefaultClassTrackedBuffs = {
-    ["PALADIN"] = {"Blessing of Wisdom", "Blessing of Might", "Blessing of Salvation", "Blessing of Sanctuary", 
+    ["PALADIN"] = {"Blessing of Wisdom", "Blessing of Might", "Blessing of Sanctuary", 
         "Blessing of Kings", "Blessing of Light", "Greater Blessing of Wisdom", "Greater Blessing of Might", 
-        "Greater Blessing of Salvation", "Greater Blessing of Sanctuary", "Greater Blessing of Kings", 
+        "Greater Blessing of Sanctuary", "Greater Blessing of Kings", 
         "Greater Blessing of Light", "Daybreak", "Blessing of Freedom", "Hand of Freedom", "Redoubt", "Holy Shield"},
     ["PRIEST"] = {"Prayer of Fortitude", "Power Word: Fortitude", "Prayer of Spirit", "Divine Spirit", 
         "Prayer of Shadow Protection", "Shadow Protection", "Holy Champion", "Champion's Grace", "Empower Champion", 
         "Fear Ward", "Inner Fire", "Renew", "Greater Heal", "Lightwell Renew", "Inspiration", 
-        "Fade", "Spirit Tap", "Enlighten", "Enlightened"},
+        "Fade", "Spirit Tap", "Enlighten", "Enlightened", "Champion's Bond"},
     ["WARRIOR"] = {"Battle Shout"},
     ["DRUID"] = {"Gift of the Wild", "Mark of the Wild", "Thorns", "Rejuvenation", "Regrowth"},
     ["SHAMAN"] = {"Water Walking", "Healing Way", "Ancestral Fortitude"},
     ["MAGE"] = {"Arcane Brilliance", "Arcane Intellect", "Frost Armor", "Ice Armor", "Mage Armor"},
-    ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield"},
+    ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield", "Unleashed Potential", "Felstone", "Spellstone", "Firestone", "Wrathstone", "Mana Funnel"},
     ["HUNTER"] = {"Rapid Fire", "Quick Shots", "Quick Strikes", "Aspect of the Pack", 
         "Aspect of the Wild", "Bestial Wrath", "Feed Pet Effect"}
 }
@@ -365,7 +365,8 @@ DefaultTrackedDebuffs = {
     "Death Wish", -- Warrior
     "Enrage", -- Druid
     "Recently Bandaged", "Resurrection Sickness", "Ghost", -- Generic
-    "Deafening Screech" -- Applied by mobs
+    "Deafening Screech", -- Applied by mobs
+    "Power Overwhelming", "Enslave Demon"
 }
 -- Tracked debuffs for specific classes
 DefaultClassTrackedDebuffs = {

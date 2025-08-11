@@ -103,7 +103,7 @@ function PTUIProfile.SetDefaults()
     profile.PaddingBottom = 20
 
     profile.HealthBarHeight = 24
-    profile.HealthBarColor = "Green To Red" -- "Class", "Green", "Green To Red"
+    profile.HealthBarColor = "Class" -- "Class", "Green", "Green To Red"
     profile.EnemyHealthBarColor = "Green"
     profile.HealthBarStyle = "Puppeteer" -- "Blizzard", "Blizzard Raid", "Puppeteer"
 
@@ -166,10 +166,10 @@ function PTUIProfile.SetDefaults()
     profile.NameDisplay = "Name" -- Unimplemented
     -- "Name", "Name (Class)"
 
-    profile.ShowDistanceThreshold = {Friendly = 30, Hostile = 30}
+    profile.ShowDistanceThreshold = {Friendly = 30, Hostile = 24}
     profile.OutOfRangeThreshold = {Friendly = 41, Hostile = 41}
 
-    profile.OutOfRangeOpacity = 50
+    profile.OutOfRangeOpacity = 30
     profile.RangeText = createTextObject({
         ["FontSize"] = 9,
         ["AlignmentV"] = "TOP",
