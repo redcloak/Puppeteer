@@ -354,7 +354,7 @@ DefaultClassTrackedBuffs = {
     ["DRUID"] = {"Gift of the Wild", "Mark of the Wild", "Thorns", "Rejuvenation", "Regrowth"},
     ["SHAMAN"] = {"Water Walking", "Healing Way", "Ancestral Fortitude"},
     ["MAGE"] = {"Arcane Brilliance", "Arcane Intellect", "Frost Armor", "Ice Armor", "Mage Armor"},
-    ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield", "Unleashed Potential", "Felstone", "Spellstone", "Firestone", "Wrathstone", "Mana Funnel"},
+    ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield", "Unleashed Potential", "Felstone", "Spellstone", "Firestone", "Wrathstone", "Mana Funnel", "Voidstone"},
     ["HUNTER"] = {"Rapid Fire", "Quick Shots", "Quick Strikes", "Aspect of the Pack", 
         "Aspect of the Wild", "Bestial Wrath", "Feed Pet Effect"}
 }
