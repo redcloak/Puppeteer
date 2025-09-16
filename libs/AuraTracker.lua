@@ -9,7 +9,7 @@ local turtle = PTUtil.IsTurtleWow()
 local trackedCastedAuras = {
     -- Druid
     ["Rejuvenation"] = 12,
-    ["Regrowth"] = turtle and 20 or 21,
+    ["Regrowth"] = 21,
     ["Mark of the Wild"] = 30 * 60,
     ["Gift of the Wild"] = 60 * 60,
     ["Thorns"] = 10 * 60,
@@ -33,7 +33,6 @@ local trackedCastedAuras = {
     ["Fear Ward"] = 10 * 60,
     ["Champion's Grace"] = 30 * 60,
     ["Empower Champion"] = 10 * 60,
-    ["Champion's Bond"] = 10 * 60,
     ["Spirit of Redemption"] = 10,
     ["Abolish Disease"] = 20,
     ["Inner Fire"] = 10 * 60,
@@ -79,9 +78,13 @@ local trackedCastedAuras = {
     ["Demon Skin"] = 30 * 60,
     ["Demon Armor"] = 30 * 60,
     ["Fire Shield"] = 3 * 60,
+    ["Unleashed Potential"] = 20,
+    ["Power Overwhelming"] = 10,
     -- Warlock: Offsensive
     ["Corruption"] = 18,
     ["Immolate"] = 15,
+    ["Health Funnel"] = 10,
+    ["Mana Funnel"] = 10,
     ["Curse of Agony"] = 24,
     ["Curse of Tongues"] = 30,
     ["Curse of Recklessness"] = 2 * 60,
@@ -115,6 +118,8 @@ local additionalAuras = {
     ["Divine Shield"] = {"Forbearance"},
     ["Blessing of Protection"] = {"Forbearance"},
     ["Hand of Protection"] = {"Forbearance"},
+    ["Health Funnel"] = {"Unleashed Potential"},
+    ["Mana Funnel"] = {"Unleashed Potential"},
     ["First Aid"] = {"Recently Bandaged"},
     ["Power Word: Shield"] = {"Weakened Soul"}
 }
@@ -126,6 +131,9 @@ local aoeAuras = {
     ["Prayer of Shadow Protection"] = 100, 
     ["Arcane Brilliance"] = 100, 
     ["Gift of the Wild"] = 100, 
+    ["Power Overwhelming"] = 100, 
+    ["Health Funnel"] = 100,
+    ["Mana Funnel"] = 100,
     ["Battle Shout"] = 20
 }
 
@@ -161,10 +169,15 @@ castEventFrame:SetScript("OnEvent", function()
                 return
             end
             if aoeAuras[spellName] then
-                local targets = PTUtil.GetSurroundingPartyMembers(target, aoeAuras[spellName])
+                local targets = PTUtil.GetSurroundingRaidMembers(target, aoeAuras[spellName], 1)
                 for _, unit in ipairs(targets) do
                     local units = PTGuidRoster.GetAllUnits(unit)
                     applyTimedAura(spellName, units)
+                    if additionalAuras[spellName] then
+                        for _, aura in ipairs(additionalAuras[spellName]) do
+                            applyTimedAura(aura, units)
+                        end
+                    end
                 end
             elseif aoeClassAuras[spellName] then
                 local class = PTUtil.GetClass(target)
