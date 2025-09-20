@@ -4,6 +4,7 @@ PTUnitFrame.__index = PTUnitFrame
 local _G = getfenv(0)
 local PT = Puppeteer
 local util = PTUtil
+local colorize = util.Colorize
 local compost = AceLibrary("Compost-2.0")
 
 PTUnitFrame.owningGroup = nil
@@ -233,12 +234,12 @@ function PTUnitFrame:UpdateRangeText()
         end
 
         if preciseDistance then
-            text = text..util.Colorize(dist.." yd", r, g, b)
+            text = text..colorize(dist.." yd", r, g, b)
         else
             if dist < 28 then
-                text = text..util.Colorize("<"..dist.." yd", r, g, b)
+                text = text..colorize("<"..dist.." yd", r, g, b)
             else
-                text = text..util.Colorize("28+ yd", r, g, b)
+                text = text..colorize("28+ yd", r, g, b)
             end
         end
     end
@@ -438,9 +439,9 @@ end
 function PTUnitFrame:ColorizeText(inputText, color)
     if color == "Class" then
         local r, g, b = util.GetClassColor(self:GetClass())
-        return util.Colorize(inputText, r, g, b)
+        return colorize(inputText, r, g, b)
     elseif type(color) == "table" then
-        return util.Colorize(inputText, color)
+        return colorize(inputText, color)
     end
     return inputText
 end
@@ -449,7 +450,7 @@ function PTUnitFrame:UpdateHealth()
     local fake = self:IsFake()
     if not UnitExists(self.unit) and not fake then
         if self.isCustomUnit or self.unit == "target" then
-            self.healthText:SetText(util.Colorize(self.unit ~= "target" and "Too Far" or "", 0.7, 0.7, 0.7))
+            self.healthText:SetText(colorize(self.unit ~= "target" and "Too Far" or "", 0.7, 0.7, 0.7))
             self.missingHealthText:SetText("")
             self:SetHealthBarValue(0)
             self.powerBar:SetValue(0)
@@ -475,7 +476,7 @@ function PTUnitFrame:UpdateHealth()
 
     if not UnitIsConnected(unit) and (not fake or not fakeOnline) then
         self.nameText:SetText(self:ColorizeText(unitName, profile.NameText.Color))
-        self.healthText:SetText(util.Colorize("Offline", 0.7, 0.7, 0.7))
+        self.healthText:SetText(colorize("Offline", 0.7, 0.7, 0.7))
         self.missingHealthText:SetText("")
         self:SetHealthBarValue(0)
         self.powerBar:SetValue(0)
@@ -494,20 +495,20 @@ function PTUnitFrame:UpdateHealth()
             r, g, b = self:GetDebuffColor()
         end
         if r then
-            nameText = util.Colorize(unitName, r, g, b)
+            nameText = colorize(unitName, r, g, b)
         else
             nameText = self:ColorizeText(unitName, profile.NameText.Color)
         end
     else -- Unit is not a player
         if enemy then
-            nameText = util.Colorize(unitName, 1, 0.3, 0.3)
+            nameText = colorize(unitName, 1, 0.3, 0.3)
         else -- Unit is not an enemy
             local r, g, b
             if profile.ShowDebuffColorsOn == "Name" then
                 r, g, b = self:GetDebuffColor()
             end
             if r then
-                nameText = util.Colorize(unitName, r, g, b)
+                nameText = colorize(unitName, r, g, b)
             else
                 nameText = unitName
             end
@@ -524,12 +525,12 @@ function PTUnitFrame:UpdateHealth()
         local text
         if cache:IsBeingResurrected() then
             if cache:GetResurrectionCasts() > 1 then
-                text = util.Colorize("DEAD", 0.8, 1, 0.8)
+                text = colorize("DEAD", 0.8, 1, 0.8)
             else
-                text = util.Colorize("DEAD", 0.3, 1, 0.3)
+                text = colorize("DEAD", 0.3, 1, 0.3)
             end
         else
-            text = util.Colorize("DEAD", 1, 0.3, 0.3)
+            text = colorize("DEAD", 1, 0.3, 0.3)
         end
 
         -- Check for Feign Death so the healer doesn't get alarmed
@@ -549,7 +550,7 @@ function PTUnitFrame:UpdateHealth()
             self.lastHealthPercent = 0
         end
     elseif UnitIsGhost(unit) then
-        healthText:SetText(util.Colorize("Ghost", 1, 0.3, 0.3))
+        healthText:SetText(colorize("Ghost", 1, 0.3, 0.3))
         missingHealthText:SetText("")
         self:SetHealthBarValue(0)
         self.powerBar:SetValue(0)
@@ -567,11 +568,11 @@ function PTUnitFrame:UpdateHealth()
         if profile.ShowDebuffColorsOn == "Health" then
             local r, g, b = self:GetDebuffColor()
             if r then
-                text = util.Colorize(text, r, g, b)
+                text = colorize(text, r, g, b)
             end
         end
         if self.hovered then
-            text = util.Colorize(text, 1, 1, 1)
+            text = colorize(text, 1, 1, 1)
         end
 
         local missingHealth = math.floor(maxHealth - currentHealth)
@@ -605,7 +606,7 @@ function PTUnitFrame:UpdateHealth()
         self.lastHealthPercent = healthPercent
 
         if self:GetCache():HasBuffIDOrName(27827, "Spirit of Redemption") then
-            healthText:SetText(util.Colorize("Spirit", 1, 0.3, 0.3))
+            healthText:SetText(colorize("Spirit", 1, 0.3, 0.3))
         end
     end
 
@@ -1031,23 +1032,47 @@ function PTUnitFrame.Aura_OnEnter()
     tooltip.OwningFrame = this
     tooltip.OwningIcon = aura.icon
     local unit = self:GetResolvedUnit()
-    if type == "Buff" then
-        tooltip.IconTexture = cache.Buffs[index].texture
-        tooltip:SetUnitBuff(unit, index)
-    else
-        tooltip.IconTexture = cache.Debuffs[index].texture
-        tooltip:SetUnitDebuff(unit, index)
-    end
-    local auraTime = cache.AuraTimes[(type == "Buff" and cache.Buffs[index] or cache.Debuffs[index]).name]
-    if auraTime then
-        local seconds = math.floor(auraTime.startTime - GetTime() + auraTime.duration)
-        if seconds < 60 then
-            tooltip:AddLine(seconds.." second"..(seconds ~= 1 and "s" or "").." remaining")
+    local auraData = (type == "Buff" and cache.Buffs or cache.Debuffs)[index]
+    if auraData then
+        tooltip.IconTexture = auraData.texture
+        if type == "Buff" then
+            tooltip:SetUnitBuff(unit, index)
         else
-            tooltip:AddLine(math.ceil(seconds / 60).." minutes remaining")
+            tooltip:SetUnitDebuff(unit, index)
         end
+        local auraTime = cache.AuraTimes[auraData.name]
+        if auraTime then
+            local seconds = math.floor(auraTime.startTime - GetTime() + auraTime.duration)
+            local time
+            local format
+            if seconds < 60 then
+                time = seconds
+                if time == 1 then
+                    format = SPELL_TIME_REMAINING_SEC
+                else
+                    format = SPELL_TIME_REMAINING_SEC_P1
+                end
+            else
+                time = math.ceil(seconds / 60)
+                format = SPELL_TIME_REMAINING_MIN_P1
+            end
+            tooltip:AddLine(string.format(format, time))
+        end
+        tooltip:Show()
+    else
+        Puppeteer.print(colorize("Hovered over phantom aura!", 1, 0.3, 0.3))
+        Puppeteer.print("Unit: "..self:GetUnit())
+        Puppeteer.print("Aura: "..index.." ("..type..")")
+        local lastIndex = 0
+        for i = 1, 33 do
+            local aura = (type == "Buff" and cache.Buffs or cache.Debuffs)[i]
+            if not aura then
+                lastIndex = i - 1
+                break
+            end
+        end
+        Puppeteer.print("Final index: "..lastIndex)
     end
-    tooltip:Show()
 
     if MouseIsOver(self.button) then
         self.button:GetScript("OnEnter")()

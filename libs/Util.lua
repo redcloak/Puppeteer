@@ -473,10 +473,10 @@ ScanningTooltip:AddFontStrings(
     ScanningTooltip:CreateFontString( "$parentTextLeft1", nil, "GameTooltipText" ),
     ScanningTooltip:CreateFontString( "$parentTextRight1", nil, "GameTooltipText" ) );
 
--- Thanks ChatGPT
+local spellRankString = RANK.." "
 function ExtractSpellRank(spellname)
     -- Find the starting position of "Rank "
-    local start_pos = string.find(spellname, "Rank ")
+    local start_pos = string.find(spellname, spellRankString)
 
     -- Check if "Rank " was found
     if start_pos then
@@ -497,42 +497,16 @@ function ExtractSpellRank(spellname)
     return nil
 end
 
--- Thanks again ChatGPT
-local tooltipResources = {["Mana"] = "mana", ["Rage"] = "rage", ["Energy"] = "energy"}
+local resourceCostPatterns = {[MANA_COST] = "mana", [RAGE_COST] = "rage", [ENERGY_COST] = "energy", [FOCUS_COST] = "focus"}
 function ExtractResourceCost(costText)
-
-    -- First extract resource type
-    local resource
-    for tooltipName, lowerName in pairs(tooltipResources) do
-        if string.find(costText, tooltipName) then
-            resource = lowerName
-            break
+    for costPattern, resourceName in pairs(resourceCostPatterns) do
+        local cost = cmatch(costText, costPattern)
+        if cost then
+            return tonumber(cost), resourceName
         end
     end
-
-    -- No resource found, this spell is probably free
-    if not resource then
-        return 0
-    end
-
-    -- Find the position where non-digit characters start
-    local num_end = string.find(costText, "%D")
-
-    -- If a non-digit character is found, extract the number
-    if num_end then
-        -- Extract the number substring from the start to the position before the non-digit character
-        local number_str = string.sub(costText, 1, num_end - 1)
-        -- Convert the substring to a number
-        local number = tonumber(number_str)
-        -- Print the result
-        return number or 0, resource
-    else
-        -- If no non-digit character is found, the entire string is a number
-        local number = tonumber(costText)
-        return number or 0, resource
-    end
+    return 0
 end
-
 
 function GetSpellID(spellname)
     local id = 1

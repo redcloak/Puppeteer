@@ -36,6 +36,7 @@ ResurrectionSpells = {
     ["SHAMAN"] = "Ancestral Spirit",
     ["DRUID"] = "Rebirth"
 }
+PTLocale.Values(ResurrectionSpells)
 
 local ptBarsPath = util.GetAssetsPath().."textures\\bars\\"
 BarStyles = {

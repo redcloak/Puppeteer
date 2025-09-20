@@ -108,6 +108,7 @@ local trackedCastedAuras = {
     ["First Aid"] = 8,
     ["Recently Bandaged"] = 60,
 }
+PTLocale.Keys(trackedCastedAuras)
 
 -- Auras to start the timer for even though they weren't directly casted
 local additionalAuras = {
@@ -118,6 +119,10 @@ local additionalAuras = {
     ["First Aid"] = {"Recently Bandaged"},
     ["Power Word: Shield"] = {"Weakened Soul"}
 }
+PTLocale.Keys(additionalAuras)
+for _, array in pairs(additionalAuras) do
+    PTLocale.Array(array)
+end
 
 -- Value is range
 local aoeAuras = {
@@ -128,6 +133,7 @@ local aoeAuras = {
     ["Gift of the Wild"] = 100, 
     ["Battle Shout"] = 20
 }
+PTLocale.Keys(aoeAuras)
 
 -- Paladins always get their own special stuff..
 -- Their buffs are aoe but apply to the whole raid for a specific class
@@ -135,6 +141,7 @@ local aoeClassAuras = PTUtil.ToSet({
     "Greater Blessing of Wisdom", "Greater Blessing of Might", "Greater Blessing of Salvation", 
     "Greater Blessing of Sanctuary", "Greater Blessing of Kings", "Greater Blessing of Light"
 })
+PTLocale.Keys(aoeClassAuras)
 
 local function applyTimedAura(spellName, units)
     for _, unit in ipairs(units) do

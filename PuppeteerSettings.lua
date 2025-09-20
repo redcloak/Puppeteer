@@ -6,31 +6,33 @@ local util = PTUtil
 
 local _, playerClass = UnitClass("player")
 
-function UpdateTrackedDebuffTypes()
-    local debuffTypeCureSpells = {
-        ["PALADIN"] = {
-            ["Purify"] = {"Poison", "Disease"},
-            ["Cleanse"] = {"Poison", "Disease", "Magic"}
-        },
-        ["PRIEST"] = {
-            ["Cure Disease"] = {"Disease"},
-            ["Abolish Disease"] = {"Disease"},
-            ["Dispel Magic"] = {"Magic"}
-        },
-        ["DRUID"] = {
-            ["Cure Poison"] = {"Poison"},
-            ["Abolish Poison"] = {"Poison"},
-            ["Remove Curse"] = {"Curse"}
-        },
-        ["SHAMAN"] = {
-            ["Cure Poison"] = {"Poison"},
-            ["Cure Disease"] = {"Disease"}
-        },
-        ["MAGE"] = {
-            ["Remove Lesser Curse"] = {"Curse"}
-        }
+local debuffTypeCureSpells = {
+    ["PALADIN"] = {
+        ["Purify"] = {"Poison", "Disease"},
+        ["Cleanse"] = {"Poison", "Disease", "Magic"}
+    },
+    ["PRIEST"] = {
+        ["Cure Disease"] = {"Disease"},
+        ["Abolish Disease"] = {"Disease"},
+        ["Dispel Magic"] = {"Magic"}
+    },
+    ["DRUID"] = {
+        ["Cure Poison"] = {"Poison"},
+        ["Abolish Poison"] = {"Poison"},
+        ["Remove Curse"] = {"Curse"}
+    },
+    ["SHAMAN"] = {
+        ["Cure Poison"] = {"Poison"},
+        ["Cure Disease"] = {"Disease"}
+    },
+    ["MAGE"] = {
+        ["Remove Lesser Curse"] = {"Curse"}
     }
-
+}
+for _, spells in pairs(debuffTypeCureSpells) do
+    PTLocale.Keys(spells)
+end
+function UpdateTrackedDebuffTypes()
     for _, class in ipairs(util.GetClasses()) do
         if not debuffTypeCureSpells[class] then
             debuffTypeCureSpells[class] = {}
@@ -387,6 +389,17 @@ DefaultTrackedDebuffs = {
 DefaultClassTrackedDebuffs = {
     ["PRIEST"] = {"Weakened Soul"}
 }
+
+PTLocale.Array(DefaultTrackedHealingBuffs)
+PTLocale.Array(DefaultTrackedHealingDebuffs)
+PTLocale.Array(DefaultTrackedBuffs)
+PTLocale.Array(DefaultTrackedDebuffs)
+for _, buffs in pairs(DefaultClassTrackedBuffs) do
+    PTLocale.Array(buffs)
+end
+for _, debuffs in pairs(DefaultClassTrackedDebuffs) do
+    PTLocale.Array(debuffs)
+end
 
 -- The baked aura sets
 TrackedBuffs = {}

@@ -39,6 +39,7 @@ local PRAYER_OF_HEALING_IDS = PTUtil.ToSet({596, 996, 10960, 10961, 25316})
 local ResurrectionSpells = PTUtil.ToSet({
     "Resurrection", "Revive Champion", "Redemption", "Ancestral Spirit", "Rebirth"
 })
+PTLocale.Keys(ResurrectionSpells)
 
 local TRACKED_HOTS = PTUtil.ToSet({
     "Rejuvenation", "Regrowth", -- Druid
@@ -46,6 +47,7 @@ local TRACKED_HOTS = PTUtil.ToSet({
     "Mend Pet", -- Hunter
     "First Aid" -- Generic
 })
+PTLocale.Keys(TRACKED_HOTS)
 
 function OnLoad()
     print = Puppeteer.print
@@ -622,10 +624,9 @@ end)
 local auraCombatLogFrame = CreateFrame("Frame", "PTHealPredictAuraCombatLog")
 auraCombatLogFrame:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_OTHER")
 auraCombatLogFrame:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_PARTY")
-auraCombatLogFrame:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
 auraCombatLogFrame:SetScript("OnEvent", function()
     local spell, name = cmatch(arg1, AURAREMOVEDOTHER) -- "%s fades from %s."
-    if spell and name and name ~= "you" then
+    if spell and name then
         local guid = getGuidFromLogName(name)
         if not guid then
             return
@@ -633,7 +634,11 @@ auraCombatLogFrame:SetScript("OnEvent", function()
         RemoveHoT(spell, guid)
         return
     end
+end)
 
+local selfAuraCombatLogFrame = CreateFrame("Frame", "PTHealPredictSelfAuraCombatLog")
+selfAuraCombatLogFrame:RegisterEvent("CHAT_MSG_SPELL_AURA_GONE_SELF")
+selfAuraCombatLogFrame:SetScript("OnEvent", function()
     local spell = cmatch(arg1, AURAREMOVEDSELF) -- "%s fades from you."
     if spell then
         RemoveHoT(spell, getSelfGuid())

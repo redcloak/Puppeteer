@@ -8,6 +8,7 @@ local GetClass = util.GetClass
 local GetItemCount = util.GetItemCount
 local IsValidMacro = util.IsValidMacro
 local GetResourceCost = util.GetResourceCost
+local T = PTLocale.T
 
 local lowToHighColors = {
     {1, 0, 0}, 
@@ -44,9 +45,9 @@ for class, spell in pairs(ResurrectionSpells) do
     }
     SpecialSpellBindings[spell] = binding
 end
-SpecialSpellBindings["Revive Champion"] = {
+SpecialSpellBindings[T("Revive Champion")] = {
     ["Type"] = "SPELL",
-    ["Data"] = "Revive Champion"
+    ["Data"] = T("Revive Champion")
 }
 
 BindTypeTooltipColors = {
@@ -307,11 +308,11 @@ function ApplySpellsTooltip(attachTo, unit, owner)
     local deadFriend = util.IsDeadFriend(unit)
     local selfClass = GetClass("player")
     local canResurrect = PTOptions.AutoResurrect and deadFriend and ResurrectionSpells[selfClass]
-    local canReviveChampion = canResurrect and util.GetSpellID("Revive Champion") and 
-        PTUnit.Get(unit):HasBuffIDOrName(45568, "Holy Champion") and UnitAffectingCombat("player")
+    local canReviveChampion = canResurrect and util.GetSpellID(T("Revive Champion")) and 
+        PTUnit.Get(unit):HasBuffIDOrName(45568, T("Holy Champion")) and UnitAffectingCombat("player")
     local resEntry
     if canReviveChampion then
-        resEntry = UpdateBindingDisplay(SpecialSpellBindings["Revive Champion"], compost:GetTable())
+        resEntry = UpdateBindingDisplay(SpecialSpellBindings[T("Revive Champion")], compost:GetTable())
     elseif canResurrect then
         resEntry = UpdateBindingDisplay(SpecialSpellBindings[ResurrectionSpells[selfClass]], compost:GetTable())
     end

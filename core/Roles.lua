@@ -133,7 +133,7 @@ function SetUnitRoleAndUpdate(unit, role)
 end
 
 -- Players will be considered as the role in the index if they have the highest talent points in said index.
--- Clases not listed have only DPS specs and are not bothered to be scanned.
+-- Classes not listed have only DPS specs and are not bothered to be scanned.
 TalentCountRoleMap = {
     PRIEST = {
         "Healer", "Healer", "Damage"

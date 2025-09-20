@@ -1,5 +1,5 @@
 ## Interface: 11200
-## Version: 1.0.5
+## Version: 1.1.0-beta
 ## Title: Puppeteer
 ## Notes: Unit frames addon tailored for healers
 ## Author: OldManAlpha, Richard Truax(i2ichardt)
@@ -25,6 +25,13 @@ libs\ace\HealComm-1.0\HealComm-1.0.lua
 
 libs\UnitProxy.lua
 libs\Util.lua
+
+locale\Locale.lua
+locale\esES.lua
+locale\ptBR.lua
+locale\deDE.lua
+locale\ruRU.lua
+locale\zhCN.lua
 
 libs\gui\PTGuiLib.lua
 libs\gui\Component.lua
