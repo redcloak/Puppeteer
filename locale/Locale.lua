@@ -5,7 +5,7 @@ local compost = AceLibrary("Compost-2.0")
 Translations = nil
 
 -- Set to true to enable the ability to dump all things that need translations
-local EXPORT_MODE = false
+local EXPORT_MODE = true
 
 function SetTranslations(translations)
     Translations = translations
@@ -20,7 +20,7 @@ function SetTranslations(translations)
 end
 
 function IsUsingTranslations()
-    return Translations ~= nil
+    return Translations ~= nil or EXPORT_MODE
 end
 
 -- English version

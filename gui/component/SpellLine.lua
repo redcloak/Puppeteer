@@ -297,7 +297,7 @@ function PTSpellLine:Update()
         self:SetEnabledContent("editbox")
         self:GetTypeDropdown():SetText("Spell")
         self:GetContentEditbox():SetText(binding.Data or "")
-        self:GetContentEditbox():ApplyTooltip("Enter the name of a spell", "To downrank, suffix '(Rank #)'", "For example, 'Heal(Rank 2)'")
+        self:GetContentEditbox():ApplyTooltip("Enter the name of a spell", "To downrank, suffix '("..RANK.." #)'", "For example, 'Heal("..RANK.." 2)'")
         self:ApplySearchableEditbox("SPELL", SearchSpells, 2)
     elseif binding.Type == "ACTION" then
         self:SetEnabledContent("dropdown")
