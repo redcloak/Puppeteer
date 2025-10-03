@@ -381,9 +381,10 @@ DefaultClassTrackedBuffs = {
 DefaultTrackedDebuffs = {
     "Forbearance", -- Paladin
     "Death Wish", -- Warrior
-    "Enrage", -- Druid
-    "Recently Bandaged", "Resurrection Sickness", "Ghost", -- Generic
-    "Deafening Screech" -- Applied by mobs
+    "Enrage", "Entangling Roots", -- Druid
+    "Frost Nova", -- Mage
+    "Recently Bandaged", "Resurrection Sickness", "Ghost", "Net", -- Generic
+    "Deafening Screech", "Web Explosion" -- Applied by mobs
 }
 -- Tracked debuffs for specific classes
 DefaultClassTrackedDebuffs = {
@@ -418,7 +419,7 @@ function BakeTrackedAuras()
     if DefaultClassTrackedBuffs[playerClass] then
         util.AppendArrayElements(trackedBuffsArray, DefaultClassTrackedBuffs[playerClass])
     end
-    util.AppendArrayElements(trackedBuffsArray, TrackedHealingBuffs)
+    util.AppendArrayElements(trackedBuffsArray, DefaultTrackedHealingBuffs)
     util.AppendArrayElements(trackedBuffsArray, DefaultTrackedBuffs)
     util.ToSet(trackedBuffsArray, true, TrackedBuffs)
 
@@ -426,7 +427,7 @@ function BakeTrackedAuras()
     if DefaultClassTrackedDebuffs[playerClass] then
         util.AppendArrayElements(trackedDebuffsArray, DefaultClassTrackedDebuffs[playerClass])
     end
-    util.AppendArrayElements(trackedDebuffsArray, TrackedHealingDebuffs)
+    util.AppendArrayElements(trackedDebuffsArray, DefaultTrackedHealingDebuffs)
     util.AppendArrayElements(trackedDebuffsArray, DefaultTrackedDebuffs)
     util.ToSet(trackedDebuffsArray, true, TrackedDebuffs)
 
