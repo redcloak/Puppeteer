@@ -499,8 +499,8 @@ function CreateTab_Options_Advanced(panel)
         :SetWidth(TEXT_WIDTH)
         :SetPoint("TOP", experimentsLabel, "BOTTOM", 0, -5)
     layout:offset(0, -70)
-    factory:checkbox("(TWoW) Auto Role", {"If enabled, the Role Action menu shows auto role detection options",
-        colorize("Using this functionality WILL cause errors and other unexpected behavior", 1, 0.4, 0.4)}, "Global.Experiments.AutoRole",
+    factory:checkbox("(TWoW) Auto Role", {"If enabled, the Role Action menu shows auto role detection options"}, 
+        "Global.Experiments.AutoRole",
         Puppeteer.InitRoleDropdown)
 
     local scriptsLabel = CreateLabel(container, "Load & Postload Scripts")

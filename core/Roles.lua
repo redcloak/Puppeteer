@@ -153,7 +153,18 @@ TalentCountRoleMap = {
 }
 
 local PlayerTalentData = {}
+local SCAN_TIMEOUT = 4
+local scanTimeoutAt
 local talentScanner = CreateFrame("Frame", "PTTalentScanner")
+local function TalentScanner_OnUpdate()
+    if GetTime() >= scanTimeoutAt then
+        talentScanner:SetScript("OnUpdate", nil)
+        util.ClearTable(PlayerTalentData)
+        if InspectTalentsComFrame then
+            InspectTalentsComFrame:RegisterEvent("CHAT_MSG_ADDON")
+        end
+    end
+end
 talentScanner:RegisterEvent("CHAT_MSG_ADDON")
 talentScanner:SetScript("OnEvent", function()
     if arg1 == "TW_CHAT_MSG_WHISPER" then
@@ -195,18 +206,31 @@ talentScanner:SetScript("OnEvent", function()
             end
             local class = data.class
             -- Check for Druid Thick Hide talent, set as tank if they have it
-            if class == "DRUID" and (trees[2].talents["2-3"] or 0) > 0 then
+            if class == "DRUID" and mostIndex == 2 and (trees[2].talents["2-3"] or 0) > 0 then
                 SetRoleAndUpdate(sender, "Tank")
             else
                 SetRoleAndUpdate(sender, mostPoints > 0 and TalentCountRoleMap[class][mostIndex] or "Damage")
             end
             PlayerTalentData[sender] = nil
+            if util.IsTableEmpty(PlayerTalentData) then
+                scanTimeoutAt = 0 -- Re-enable inspect comm next frame
+            end
         end
     end
 end)
 
 local function requestTalents(name)
     SendAddonMessage("TW_CHAT_MSG_WHISPER<"..name..">", "INSShowTalents", "GUILD")
+end
+
+local function startTalentScan(name, class)
+    PlayerTalentData[name] = {class = class, trees = {}}
+    talentScanner:SetScript("OnUpdate", TalentScanner_OnUpdate)
+    scanTimeoutAt = GetTime() + SCAN_TIMEOUT
+    if InspectTalentsComFrame then -- This frame generates errors if there's unexpected talent inspections
+        InspectTalentsComFrame:UnregisterEvent("CHAT_MSG_ADDON")
+    end
+    requestTalents(name)
 end
 
 function AutoRole(unit)
@@ -218,8 +242,7 @@ function AutoRole(unit)
     if not UnitIsConnected(unit) then -- Can't request offline player's talents
         return
     end
-    PlayerTalentData[UnitName(unit)] = {class = class, trees = {}}
-    requestTalents(UnitName(unit))
+    startTalentScan(UnitName(unit), class)
 end
 
 function AutoRoleByNameClass(name, class)
@@ -227,8 +250,7 @@ function AutoRoleByNameClass(name, class)
         SetRoleAndUpdate(name, "Damage")
         return
     end
-    PlayerTalentData[name] = {class = class, trees = {}}
-    requestTalents(name)
+    startTalentScan(name, class)
 end
 
 RoleAssignInfo = {}
