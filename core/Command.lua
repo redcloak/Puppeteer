@@ -56,6 +56,25 @@ SlashCmdList["PUPPETEER"] = function(args)
         Puppeteer.CheckGroup()
         DEFAULT_CHAT_FRAME:AddMessage("The Puppeteer UI is now "..(PTOptions.Hidden and 
             PTUtil.Colorize("hidden", 1, 0.6, 0.6) or PTUtil.Colorize("shown", 0.6, 1, 0.6))..".")
+    elseif args == "roles" then
+        local group = Puppeteer.UnitFrameGroups[Puppeteer.CurrentlyInRaid and "Raid" or "Party"]
+        local chatType = Puppeteer.CurrentlyInRaid and "RAID" or "PARTY"
+        local tanks = {}
+        local healers = {}
+        for _, ui in group.uis do
+            if UnitIsPlayer(ui:GetUnit()) then
+                local role = ui:GetRole()
+                local name = UnitName(ui:GetUnit())
+                if role == "Tank" then
+                    table.insert(tanks, name)
+                elseif role == "Healer" then
+                    table.insert(healers, name)
+                end
+            end
+        end
+        SendChatMessage("Puppeteer -- Assigned Roles", chatType)
+        SendChatMessage("Tanks("..table.getn(tanks).."): "..table.concat(tanks, ", "), chatType)
+        SendChatMessage("Healers("..table.getn(healers).."): "..table.concat(healers, ", "), chatType)
     elseif args == "silent" then
         PTGlobalOptions.ShowLoadMessage = not PTGlobalOptions.ShowLoadMessage
         DEFAULT_CHAT_FRAME:AddMessage("Load message is now "..(PTGlobalOptions.ShowLoadMessage and 
@@ -68,6 +87,7 @@ SlashCmdList["PUPPETEER"] = function(args)
         DEFAULT_CHAT_FRAME:AddMessage(PTUtil.Colorize("/pt toggle", 0, 0.8, 0).." -- Shows/hides the UI")
         DEFAULT_CHAT_FRAME:AddMessage(PTUtil.Colorize("/pt show", 0, 0.8, 0).." -- Shows the UI")
         DEFAULT_CHAT_FRAME:AddMessage(PTUtil.Colorize("/pt hide", 0, 0.8, 0).." -- Hides the UI")
+        DEFAULT_CHAT_FRAME:AddMessage(PTUtil.Colorize("/pt roles", 0, 0.8, 0).." -- Broadcast the roles you have assigned to chat")
         DEFAULT_CHAT_FRAME:AddMessage(PTUtil.Colorize("/pt silent", 0, 0.8, 0).." -- Turns off/on message when addon loads")
     elseif args == "importhm" then
         Puppeteer.ImportHealersMateSettings()
