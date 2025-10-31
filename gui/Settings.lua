@@ -225,6 +225,7 @@ function CreateTab_Bindings()
             EditedBindings.UseFriendlyForHostile = self:GetChecked() == 1
             SetTargetContext("Friendly")
             UpdateBindingsInterface()
+            UpdateUnsavedChanges()
         end)
     UniversalBindingsCheckbox = universalBindingsCheckbox
 
@@ -253,11 +254,36 @@ function CreateTab_Bindings()
 
     SpellBindInterface = interface
 
-    LoadBindings()
+    UnsavedChangesText = PTGuiLib.GetText(container, "", 12)
+        :SetPoint("TOP", interface, "BOTTOM", 0, -3)
+        --:SetTextColor(1, 0.2, 0.2)
     
 
+    DiscardButton = PTGuiLib.Get("button", container)
+        :SetPoint("BOTTOMLEFT", container, "BOTTOMLEFT", 10, 35)
+        :SetSize(125, 25)
+        :SetText("Discard Changes")
+        :OnClick(function()
+            LoadBindings()
+        end)
+    SaveAndCloseButton = PTGuiLib.Get("button", container)
+        :SetPoint("BOTTOM", container, "BOTTOM", 0, 35)
+        :SetSize(125, 25)
+        :SetText("Save & Close")
+        :OnClick(function()
+            SaveBindings()
+            TabFrame:Hide()
+        end)
+    SaveButton = PTGuiLib.Get("button", container)
+        :SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -10, 35)
+        :SetSize(125, 25)
+        :SetText("Save Changes")
+        :OnClick(function()
+            SaveBindings()
+        end)
+
     local addButton = PTGuiLib.Get("button", container)
-        :SetPoint("TOP", container, "TOP", 0, -440)
+        :SetPoint("TOP", container, "TOP", 0, -445)
         :SetSize(200, 25)
         :SetText("Add or Remove Buttons")
         :ApplyTooltip("Edit what buttons you can bind spells to")
@@ -267,28 +293,7 @@ function CreateTab_Bindings()
             AddOverlayFrame(editor)
         end)
 
-    local discardButton = PTGuiLib.Get("button", container)
-        :SetPoint("BOTTOMLEFT", container, "BOTTOMLEFT", 10, 50)
-        :SetSize(125, 25)
-        :SetText("Discard Changes")
-        :OnClick(function()
-            LoadBindings()
-        end)
-    local saveAndCloseButton = PTGuiLib.Get("button", container)
-        :SetPoint("BOTTOM", container, "BOTTOM", 0, 50)
-        :SetSize(125, 25)
-        :SetText("Save & Close")
-        :OnClick(function()
-            SaveBindings()
-            TabFrame:Hide()
-        end)
-    local saveButton = PTGuiLib.Get("button", container)
-        :SetPoint("BOTTOMRIGHT", container, "BOTTOMRIGHT", -10, 50)
-        :SetSize(125, 25)
-        :SetText("Save Changes")
-        :OnClick(function()
-            SaveBindings()
-        end)
+    LoadBindings()
 end
 
 function PromptNewLoadout()
@@ -354,11 +359,32 @@ function LoadBindings()
     end
     BindingsForDropdown:UpdateText()
     UpdateBindingsInterface()
+    UpdateUnsavedChanges()
 end
 
 function SaveBindings()
     Puppeteer.GetBindingLoadouts()[Puppeteer.GetSelectedBindingsLoadoutName()] = Puppeteer.PruneLoadout(EditedBindings)
     LoadBindings()
+end
+
+function UpdateUnsavedChanges()
+    local ok, changes = pcall(Puppeteer.GetNumLoadoutChanges, Puppeteer.GetBindings(), EditedBindings)
+    if not ok then
+        Puppeteer.print(changes)
+        changes = "ERROR"
+    end
+    if changes == 0 then
+        UnsavedChangesText:Hide()
+        DiscardButton:SetEnabled(false)
+        SaveAndCloseButton:SetEnabled(false)
+        SaveButton:SetEnabled(false)
+    else
+        UnsavedChangesText:Show()
+        UnsavedChangesText:SetText("You have "..changes.." unsaved change"..(changes ~= 1 and "s" or "").." to your bindings")
+        DiscardButton:SetEnabled(true)
+        SaveAndCloseButton:SetEnabled(true)
+        SaveButton:SetEnabled(true)
+    end
 end
 
 function CreateTab_Options()

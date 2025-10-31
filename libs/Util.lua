@@ -154,6 +154,14 @@ function IndexOf(table, value)
     return -1
 end
 
+function KeyOf(table, value)
+    for k, v in pairs(table) do
+        if v == value then
+            return k
+        end
+    end
+end
+
 function ArrayContains(table, value)
     for _, v in ipairs(table) do
         if v == value then
@@ -186,6 +194,17 @@ function CloneTable(table, deep)
 end
 
 local compost = AceLibrary("Compost-2.0")
+
+-- Recursively reclaims all tables this table contains
+function CompostReclaim(t)
+    for k, v in pairs(t) do
+        if type(v) == "table" then
+            CompostReclaim(v)
+        end
+    end
+    compost:Reclaim(t)
+end
+
 function CloneTableCompost(t, deep)
     local clone = compost:GetTable()
     local n = 0
@@ -249,6 +268,18 @@ function TableEquals(t1, t2)
         end
     end
     return true
+end
+
+function TraverseTable(v, k1, k2, k3, k4, k5)
+    local keys = compost:Acquire(k1, k2, k3, k4, k5)
+    for _, k in ipairs(keys) do
+        if type(v) ~= "table" then
+            return nil, k
+        end
+        v = v[k]
+    end
+    compost:Reclaim(keys)
+    return v
 end
 
 -- Courtesy of ChatGPT
@@ -1201,7 +1232,7 @@ function CanClientSightCheck()
 end
 
 function CanClientGetAuraIDs()
-    return SuperWoW or TurtleWow
+    return SuperWoW-- or TurtleWow -- Turtle ID fetching is not reliable
 end
 
 function IsSuperWowPresent()

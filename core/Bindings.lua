@@ -5,6 +5,7 @@ local util = PTUtil
 local colorize = util.Colorize
 local GetSpellID = util.GetSpellID
 local GetClass = util.GetClass
+local CompostReclaim = util.CompostReclaim
 
 BindingClipboard = nil
 
@@ -84,6 +85,27 @@ function GetBindingLoadoutNames()
     return names
 end
 
+-- Returns a pruned copy of the loadout using composted tables
+function PruneLoadoutCompost(loadout)
+    loadout = util.CloneTableCompost(loadout, true)
+    for targetName, target in pairs(loadout.Bindings) do
+        for modifierName, modifier in pairs(target) do
+            for button, binding in pairs(modifier) do
+                local shouldRemove = PruneBinding(binding, true)
+                if shouldRemove then
+                    CompostReclaim(binding)
+                    modifier[button] = nil
+                end
+            end
+            if util.IsTableEmpty(modifier) then
+                CompostReclaim(modifier)
+                target[modifierName] = nil
+            end
+        end
+    end
+    return loadout
+end
+
 function PruneLoadout(loadout, copy)
     if copy then
         loadout = util.CloneTable(loadout, true)
@@ -104,8 +126,8 @@ function PruneLoadout(loadout, copy)
     return loadout
 end
 
-function PruneBinding(binding)
-    if not binding.Type then
+function PruneBinding(binding, useCompost)
+    if not binding.Type or not binding.Data then
         return true
     end
     if binding.Tooltip then
@@ -116,6 +138,9 @@ function PruneBinding(binding)
         end
 
         if util.IsTableEmpty(tooltip) then
+            if useCompost then
+                CompostReclaim(binding.Tooltip)
+            end
             binding.Tooltip = nil
         end
     end
@@ -150,8 +175,48 @@ function ExpandBinding(binding)
     end
 end
 
-function LoadoutEquals(loadout1, loadout2, noCopy)
-    return util.TableEquals(PruneLoadout(loadout1, not noCopy), PruneLoadout(loadout2, not noCopy))
+function LoadoutEquals(loadout1, loadout2)
+    loadout1 = PruneLoadoutCompost(loadout1)
+    loadout2 = PruneLoadoutCompost(loadout2)
+    local equals = util.TableEquals(loadout1, loadout2)
+    CompostReclaim(loadout1)
+    CompostReclaim(loadout2)
+    return equals
+end
+
+function GetNumLoadoutChanges(origLoadout, modifiedLoadout)
+    origLoadout = PruneLoadoutCompost(origLoadout)
+    modifiedLoadout = PruneLoadoutCompost(modifiedLoadout)
+    local numChanges = 0
+    local alreadyChecked = compost:GetTable()
+    for targetName, target in pairs(modifiedLoadout.Bindings) do
+        for modifierName, modifier in pairs(target) do
+            for button, binding in pairs(modifier) do
+                local otherBinding = util.TraverseTable(origLoadout.Bindings, targetName, modifierName, button)
+                if otherBinding == nil or not util.TableEquals(binding, otherBinding) then
+                    numChanges = numChanges + 1
+                    alreadyChecked[binding] = true
+                end
+            end
+        end
+    end
+    for targetName, target in pairs(origLoadout.Bindings) do
+        for modifierName, modifier in pairs(target) do
+            for button, binding in pairs(modifier) do
+                local otherBinding = util.TraverseTable(modifiedLoadout.Bindings, targetName, modifierName, button)
+                if not alreadyChecked[otherBinding] and (otherBinding == nil or not util.TableEquals(binding, otherBinding)) then
+                    numChanges = numChanges + 1
+                end
+            end
+        end
+    end
+    if origLoadout.UseFriendlyForHostile ~= modifiedLoadout.UseFriendlyForHostile then
+        numChanges = numChanges + 1
+    end
+    CompostReclaim(origLoadout)
+    CompostReclaim(modifiedLoadout)
+    compost:Reclaim(alreadyChecked)
+    return numChanges
 end
 
 -- Returns a copy of the clipboard
