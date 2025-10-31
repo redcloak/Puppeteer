@@ -197,19 +197,21 @@ talentScanner:SetScript("OnEvent", function()
             local data = PlayerTalentData[sender]
             local trees = data.trees
             local mostPoints = 0
-            local mostIndex = 1
+            local mostIndex = 0
             for i = 1, 3 do
-                if trees[i].points > mostPoints then
+                if trees[i] and trees[i].points > mostPoints then -- TODO: Error
                     mostPoints = trees[i].points
                     mostIndex = i
                 end
             end
             local class = data.class
-            -- Check for Druid Thick Hide talent, set as tank if they have it
-            if class == "DRUID" and mostIndex == 2 and (trees[2].talents["2-3"] or 0) > 0 then
-                SetRoleAndUpdate(sender, "Tank")
-            else
-                SetRoleAndUpdate(sender, mostPoints > 0 and TalentCountRoleMap[class][mostIndex] or "Damage")
+            if mostIndex > 0 then
+                -- Check for Druid Thick Hide talent, set as tank if they have it
+                if class == "DRUID" and mostIndex == 2 and (trees[2].talents["2-3"] or 0) > 0 then
+                    SetRoleAndUpdate(sender, "Tank")
+                else
+                    SetRoleAndUpdate(sender, mostPoints > 0 and TalentCountRoleMap[class][mostIndex] or "Damage")
+                end
             end
             PlayerTalentData[sender] = nil
             if util.IsTableEmpty(PlayerTalentData) then
@@ -220,6 +222,16 @@ talentScanner:SetScript("OnEvent", function()
 end)
 
 local function requestTalents(name)
+    if name == UnitName("player") then
+        if InspectTalentsComFrame then
+            -- Fake a message to ourself to send our own talents to ourself (lol)
+            local event, arg1, arg2, arg4 = _G.event, _G.arg1, _G.arg2, _G.arg4
+            _G.event, _G.arg1, _G.arg2, _G.arg4 = "CHAT_MSG_ADDON", "TW_CHAT_MSG_WHISPER", "INSShowTalents", UnitName("player")
+            InspectTalentsComFrame:GetScript("OnEvent")()
+            _G.event, _G.arg1, _G.arg2, _G.arg4 = event, arg1, arg2, arg4
+            return
+        end
+    end
     SendAddonMessage("TW_CHAT_MSG_WHISPER<"..name..">", "INSShowTalents", "GUILD")
 end
 
