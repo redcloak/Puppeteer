@@ -429,6 +429,11 @@ PVPProtectMenu:SetOptions({
     }
 })
 
+function ShouldTriggerPVPFlagProtection(unit, spell)
+    return PTOptions.PVPFlagProtection and not IsInInstance() and UnitIsPVP(unit) and UnitIsPlayer(unit) 
+        and not UnitIsPVP("player") and PVPProtectOverrideTime < GetTime() and not util.ArrayContains(ResurrectionSpells, spell)
+end
+
 local Sound_Disabled = function() end
 
 function RunTargetedAction(binding, unit, actionFunc, mustTempTarget)
@@ -531,7 +536,15 @@ local preScript = "local unit = PTScriptUnit;"..
                 "local unitData = PTUnit.Get(unit);"..
                 "local unitFrame = PTScriptUnitFrame;"
 BindingScriptCache = {}
-BindingEnvironment = setmetatable({_G = _G, api = BindingScriptAPI}, {__index = PTUnitProxy or _G})
+BindingEnvironment = setmetatable({_G = _G, api = BindingScriptAPI, print = function(...)
+    local str = table.getn(arg) > 0 and tostring(arg[1]) or ""
+    if table.getn(arg) > 1 then
+        for i = 2, table.getn(arg) do
+            str = str..tostring(arg[i])
+        end
+    end
+    DEFAULT_CHAT_FRAME:AddMessage(str)
+end}, {__index = PTUnitProxy or _G})
 local targetedScript
 local function targetedScriptFunc()
     local ok, result = pcall(targetedScript)
@@ -682,8 +695,7 @@ function RunBinding(binding, unit, unitFrame)
     local bindingType = binding.Type
     if bindingType == "SPELL" then
         if targetCastable then
-            if PTOptions.PVPFlagProtection and not IsInInstance() and UnitIsPVP(unit) and UnitIsPlayer(unit) 
-                    and not UnitIsPVP("player") and PVPProtectOverrideTime < GetTime() then
+            if ShouldTriggerPVPFlagProtection(unit, binding.Data) then
                 PVPProtectMenu:SetToggleState(false)
                 local frame = unitFrame:GetRootContainer()
                 PVPProtectMenu:SetToggleState(true, frame, frame:GetWidth(), frame:GetHeight())
