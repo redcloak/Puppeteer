@@ -339,7 +339,7 @@ function SetOption(location, value)
 end
 
 -- Buffs/debuffs that significantly modify healing
-DefaultTrackedHealingBuffs = {"Amplify Magic", "Dampen Magic"}
+DefaultTrackedHealingBuffs = {"Amplify Magic", "Dampen Magic", "Master Demonologist"}
 DefaultTrackedHealingDebuffs = {"Mortal Strike", "Wound Poison", "Curse of the Deadwood", "Veil of Shadow", "Gehennas' Curse", 
     "Necrotic Poison", "Blood Fury", "Necrotic Aura", 
     "Shadowbane Curse" -- Turtle WoW
@@ -353,10 +353,10 @@ DefaultTrackedBuffs = {
     "Evasion", "Vanish", -- Rogue
     "Deterrence", "Feign Death", "Mend Pet", -- Hunter
     "Frenzied Regeneration", "Innervate", "Abolish Poison", -- Druid
-    "Soulstone Resurrection", "Hellfire", "Health Funnel", -- Warlock
+    "Soulstone Resurrection", "Sacrifice", "Hellfire", "Health Funnel", -- Warlock
     "Ice Block", "Evocation", "Ice Barrier", "Mana Shield", -- Mage
     "Quel'dorei Meditation", "Grace of the Sunwell", -- Racial
-    "First Aid", "Food", "Drink" -- Generic
+    "First Aid", "Food", "Drink", "Invulnerability", "Living Free Action" -- Generic
 }
 -- Tracked buffs for specific classes
 DefaultClassTrackedBuffs = {
@@ -367,12 +367,12 @@ DefaultClassTrackedBuffs = {
     ["PRIEST"] = {"Prayer of Fortitude", "Power Word: Fortitude", "Prayer of Spirit", "Divine Spirit", 
         "Prayer of Shadow Protection", "Shadow Protection", "Holy Champion", "Champion's Grace", "Empower Champion", 
         "Champion's Bond", "Fear Ward", "Inner Fire", "Renew", "Greater Heal", "Lightwell Renew", "Inspiration", 
-        "Fade", "Spirit Tap", "Enlighten", "Enlightened"},
+        "Fade", "Reactive Fade", "Spirit Tap", "Enlighten", "Enlightened"},
     ["WARRIOR"] = {"Battle Shout"},
     ["DRUID"] = {"Gift of the Wild", "Mark of the Wild", "Thorns", "Rejuvenation", "Regrowth"},
     ["SHAMAN"] = {"Water Walking", "Healing Way", "Ancestral Fortitude"},
     ["MAGE"] = {"Arcane Brilliance", "Arcane Intellect", "Frost Armor", "Ice Armor", "Mage Armor"},
-    ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield"},
+    ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield", "Consume Shadows"},
     ["HUNTER"] = {"Rapid Fire", "Quick Shots", "Quick Strikes", "Aspect of the Pack", 
         "Aspect of the Wild", "Bestial Wrath", "Feed Pet Effect"}
 }
@@ -380,11 +380,14 @@ DefaultClassTrackedBuffs = {
 -- Tracked debuffs for all classes
 DefaultTrackedDebuffs = {
     "Forbearance", -- Paladin
-    "Death Wish", -- Warrior
+    "Silence", -- Priest
+    "Death Wish", "Intimidating Shout", -- Warrior
     "Enrage", "Entangling Roots", -- Druid
     "Frost Nova", -- Mage
+    "Fear", -- Warlock
     "Recently Bandaged", "Resurrection Sickness", "Ghost", "Net", -- Generic
-    "Deafening Screech", "Web Explosion" -- Applied by mobs
+    "Deafening Screech", "Hooked Net", "Web Explosion", "Chains of Ice", -- Applied by mobs
+    "Corrupted Mind", "Frost Blast" -- Naxxramas
 }
 -- Tracked debuffs for specific classes
 DefaultClassTrackedDebuffs = {
