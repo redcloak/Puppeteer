@@ -356,30 +356,24 @@ function PTUnitFrameGroup:GetSortedUIs()
     local groups = {}
     
     if self.environment == "raid" and profile.SplitRaidIntoGroups and not self.petGroup then
-        local foundRaidNumbers = {} -- Used for testing UI
         for i = 1, 8 do
             groups[i] = {}
-            local group = groups[i]
-            if RAID_SUBGROUP_LISTS and RAID_SUBGROUP_LISTS[i] then
-                for frameNumber, raidNumber in pairs(RAID_SUBGROUP_LISTS[i]) do
-                    table.insert(group, uis["raid"..raidNumber]) -- Effectively sorts raid members by ID at this point
-                    foundRaidNumbers[raidNumber] = 1
-                end
-            end
+        end
+        local raidUnits = PTUtil.RaidUnits
+        local numRaidMembers = GetNumRaidMembers()
+        for i = 1, numRaidMembers do
+            local _, _, subgroup = GetRaidRosterInfo(i)
+            local group = groups[subgroup]
+            table.insert(group, uis[raidUnits[i]])
         end
         -- If testing, fill empty slots with fake players
-        if Puppeteer.TestUI and RAID_SUBGROUP_LISTS then
-            local unoccupied = {}
-            for i = 1, 40 do
-                if not foundRaidNumbers[i] then
-                    table.insert(unoccupied, i)
-                end
-            end
-            for i = 1, 8 do
-                local group = groups[i]
+        if Puppeteer.TestUI then
+            for groupNumber = 1, 8 do
+                local group = groups[groupNumber]
                 for frameNumber = 1, 5 do
-                    if not RAID_SUBGROUP_LISTS[i] or not RAID_SUBGROUP_LISTS[i][frameNumber] then
-                        table.insert(group, uis["raid"..table.remove(unoccupied, table.getn(unoccupied))])
+                    if not group[frameNumber] then
+                        numRaidMembers = numRaidMembers + 1
+                        table.insert(group, uis[raidUnits[numRaidMembers]])
                     end
                 end
             end
