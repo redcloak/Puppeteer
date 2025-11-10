@@ -50,8 +50,6 @@ BarStyles = {
     ["Puppeteer Shineless Borderless"] = ptBarsPath.."Puppeteer-Shineless-Borderless"
 }
 
-GameTooltip = CreateFrame("GameTooltip", "PTGameTooltip", UIParent, "GameTooltipTemplate")
-
 CurrentlyHeldButton = nil
 
 -- An unmapped array of all unit frames

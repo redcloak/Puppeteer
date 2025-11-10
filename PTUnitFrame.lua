@@ -767,6 +767,51 @@ function PTUnitFrame:UpdatePower()
     self.powerText:SetText(text)
 end
 
+-- Now, I know what you're thinking. Why would you ever want to iterate through all auras just to check if the mouse is over each one?
+-- Couldn't you just listen to OnEnter events? Well yes, you could, but that captures all mouse events, obscuring the frame button.
+-- Okay, well then let's forward mouse events to the frame, why not? Hah, great idea, except one little unavoidable issue...
+-- If you start holding down your mouse and then either you move your mouse out of the aura or the aura moves, the click event
+-- does not register. Instead of casting a spell, you lose your input and end up very confused.
+-- The performance impact isn't ideal, but it's better than losing inputs.
+AuraTooltip = CreateFrame("GameTooltip", "PTAuraTooltip", UIParent, "GameTooltipTemplate")
+local MouseIsOver = MouseIsOver
+local MouseoverAuraFrame
+local MouseoverAuraDirty
+
+local PTAuraTooltipUpdater = CreateFrame("Frame", "PTAuraTooltipUpdater")
+local function PTAuraTooltipUpdater_OnUpdate()
+    if MouseoverAuraFrame then
+        if not MouseoverAuraDirty and MouseIsOver(MouseoverAuraFrame) then
+            return -- No need to bother checking other auras if mouse is over current aura
+        end
+        AuraTooltip:Hide()
+        MouseoverAuraFrame = nil
+        MouseoverAuraDirty = false
+    end
+    if Puppeteer.MouseoverFrame then
+        local unitFrame = Puppeteer.MouseoverFrame
+        if MouseIsOver(unitFrame.auraPanel) then
+            for _, icon in ipairs(unitFrame.auraIcons) do
+                if MouseIsOver(icon.frame) then
+                    unitFrame:ApplyAuraTooltip(icon.frame)
+                    MouseoverAuraFrame = icon.frame
+                    return
+                end
+            end
+        end
+    end
+end
+
+function PTUnitFrame.StartAuraTooltipUpdater()
+    PTAuraTooltipUpdater:SetScript("OnUpdate", PTAuraTooltipUpdater_OnUpdate)
+end
+
+function PTUnitFrame.StopAuraTooltipUpdater()
+    MouseoverAuraFrame = nil
+    AuraTooltip:Hide()
+    PTAuraTooltipUpdater:SetScript("OnUpdate", nil)
+end
+
 local AURA_DURATION_TEXT_FLASH_THRESHOLD = 5
 local AURA_DURATION_TEXT_LOW_THRESHOLD = 30
 -- A map of all seconds below the flash threshold to an array of colors to interpolate
@@ -789,20 +834,8 @@ if util.IsSuperWowPresent() then
     end
 end
 function PTUnitFrame:AllocateAura()
-    local frame = CreateFrame("Button", nil, self.auraPanel, "UIPanelButtonTemplate")
+    local frame = CreateFrame("Frame", nil, self.auraPanel)
     frame.unitFrame = self
-    frame:SetNormalTexture(nil)
-    frame:SetHighlightTexture(nil)
-    frame:SetPushedTexture(nil)
-    local buttons = PTOptions.CastWhen == "Mouse Up" and util.GetUpButtons() or util.GetDownButtons()
-    frame:RegisterForClicks(unpack(buttons))
-    frame:EnableMouse(true)
-
-    frame:SetScript("OnEnter", PTUnitFrame.Aura_OnEnter)
-    frame:SetScript("OnLeave", PTUnitFrame.Aura_OnLeave)
-    frame:SetScript("OnClick", PTUnitFrame.Aura_OnClick)
-    frame:SetScript("OnMouseUp", PTUnitFrame.Aura_OnMouseUp)
-    frame:SetScript("OnMouseDown", PTUnitFrame.Aura_OnMouseDown)
     
     local icon = frame:CreateTexture(nil, "ARTWORK")
     local border = frame:CreateTexture(nil, "OVERLAY")
@@ -1011,30 +1044,21 @@ function PTUnitFrame:UpdateAuras()
     compost:Reclaim(buffs)
     compost:Reclaim(debuffs)
     compost:Reclaim(typedDebuffs)
-
-    -- Prevent lingering tooltips when the icon is removed or is changed to a different aura
-    if not PT.GameTooltip.OwningFrame or not PT.GameTooltip.OwningFrame:IsShown() or 
-            PT.GameTooltip.IconTexture ~= PT.GameTooltip.OwningIcon:GetTexture() then
-        PT.GameTooltip:Hide()
+    if MouseoverAuraFrame then
+        MouseoverAuraDirty = true
     end
 end
 
+function PTUnitFrame:ApplyAuraTooltip(auraFrame)
+    local index = auraFrame.auraIndex
+    local type = auraFrame.auraType
 
-function PTUnitFrame.Aura_OnEnter()
-    local self = this.unitFrame
-    local aura = this.aura
-    local index = this.auraIndex
-    local type = this.auraType
-
-    local tooltip = PT.GameTooltip
+    local tooltip = AuraTooltip
     local cache = self:GetCache()
-    tooltip:SetOwner(this, "ANCHOR_BOTTOMLEFT")
-    tooltip.OwningFrame = this
-    tooltip.OwningIcon = aura.icon
+    tooltip:SetOwner(auraFrame, "ANCHOR_BOTTOMLEFT")
     local unit = self:GetResolvedUnit()
     local auraData = (type == "Buff" and cache.Buffs or cache.Debuffs)[index]
     if auraData then
-        tooltip.IconTexture = auraData.texture
         if type == "Buff" then
             tooltip:SetUnitBuff(unit, index)
         else
@@ -1073,36 +1097,6 @@ function PTUnitFrame.Aura_OnEnter()
         end
         Puppeteer.print("Final index: "..lastIndex)
     end
-
-    if MouseIsOver(self.button) then
-        self.button:GetScript("OnEnter")()
-    end
-end
-
-function PTUnitFrame.Aura_OnLeave()
-    PT.GameTooltip:Hide()
-    PT.GameTooltip.OwningFrame = nil
-    PT.GameTooltip.OwningIcon = nil
-    PT.GameTooltip.IconTexture = nil
-    -- Don't check mouse position for leaving, because it could cause the tooltip to stay if the icon is on the edge
-    this.unitFrame.button:GetScript("OnLeave")()
-end
-
-do
-    local wrapButtonScript = function(scriptName)
-        return function()
-            local self = this.unitFrame
-            if MouseIsOver(self.button) then
-                self.button:GetScript(scriptName)()
-            end
-        end
-    end
-
-    PTUnitFrame.Aura_OnClick = wrapButtonScript("OnClick")
-
-    PTUnitFrame.Aura_OnMouseUp = wrapButtonScript("OnMouseUp")
-
-    PTUnitFrame.Aura_OnMouseDown = wrapButtonScript("OnMouseDown")
 end
 
 local debuffTypeBorderColors = {
@@ -1344,6 +1338,7 @@ function PTUnitFrame:Initialize()
         PT.Mouseover = self:GetUnit()
         PT.MouseoverFrame = self
         PT.ApplyOverrideBindings()
+        PTUnitFrame.StartAuraTooltipUpdater()
     end)
     button:SetScript("OnLeave", function()
         PT.HideSpellsTooltip()
@@ -1361,6 +1356,7 @@ function PTUnitFrame:Initialize()
             PT.ReapplySpellsTooltip()
         end
         PT.RemoveOverrideBindings()
+        PTUnitFrame.StopAuraTooltipUpdater()
     end)
     button:EnableMouse(true)
 
