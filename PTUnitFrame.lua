@@ -164,12 +164,6 @@ end
 function PTUnitFrame:RegisterClicks()
     local buttons = PTOptions.CastWhen == "Mouse Up" and util.GetUpButtons() or util.GetDownButtons()
     self.button:RegisterForClicks(unpack(buttons))
-    for _, aura in ipairs(self.auraIcons) do
-        aura.frame:RegisterForClicks(unpack(buttons))
-    end
-    for _, aura in ipairs(self.auraIconPool) do
-        aura.frame:RegisterForClicks(unpack(buttons))
-    end
 end
 
 function PTUnitFrame:UpdateAll()
