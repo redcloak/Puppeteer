@@ -431,7 +431,7 @@ PVPProtectMenu:SetOptions({
 
 function ShouldTriggerPVPFlagProtection(unit, spell)
     return PTOptions.PVPFlagProtection and not IsInInstance() and UnitIsPVP(unit) and UnitIsPlayer(unit) 
-        and not UnitIsPVP("player") and PVPProtectOverrideTime < GetTime() and not util.ArrayContains(ResurrectionSpells, spell)
+        and not UnitIsPVP("player") and PVPProtectOverrideTime < GetTime() and not util.ResurrectionSpellsSet[spell]
 end
 
 local Sound_Disabled = function() end
@@ -488,7 +488,7 @@ function RunBinding_Spell(binding, unit)
             and UnitAffectingCombat("player") then
                 spell = "Revive Champion"
         else
-            spell = ResurrectionSpells[GetClass("player")] or spell
+            spell = util.ResurrectionSpells[GetClass("player")] or spell
         end
     end
 

@@ -415,7 +415,7 @@ function CreateTab_Options_Casting(panel)
         end
     end)
     factory:dropdown("Cast When (Keys)", "What key state to start casting spells at", "CastWhenKey", {"Key Up", "Key Down"})
-    local resSpell = Puppeteer.ResurrectionSpells[util.GetClass("player")]
+    local resSpell = util.ResurrectionSpells[util.GetClass("player")]
     local autoResInfo = not resSpell and "This does nothing for your class" or {"Replaces your bound spells with "..resSpell..
         " when clicking on a dead ally", "All other types of binds, such as Actions, will not be replaced"}
     factory:checkbox("Auto Resurrect", autoResInfo, "AutoResurrect")

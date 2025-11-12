@@ -30,14 +30,6 @@ AllUnitsSet = util.AllUnitsSet
 AllCustomUnits = util.CustomUnits
 AllCustomUnitsSet = util.CustomUnitsSet
 
-ResurrectionSpells = {
-    ["PRIEST"] = "Resurrection",
-    ["PALADIN"] = "Redemption",
-    ["SHAMAN"] = "Ancestral Spirit",
-    ["DRUID"] = "Rebirth"
-}
-PTLocale.Values(ResurrectionSpells)
-
 local ptBarsPath = util.GetAssetsPath().."textures\\bars\\"
 BarStyles = {
     ["Blizzard"] = "Interface\\TargetingFrame\\UI-StatusBar",
@@ -661,7 +653,7 @@ function UnitFrame_OnClick(button, unit, unitFrame)
         return
     end
     local targetCastable = UnitIsConnected(unit) and UnitIsVisible(unit)
-    local wantToRes = PTOptions.AutoResurrect and util.IsDeadFriend(unit) and ResurrectionSpells[GetClass("player")]
+    local wantToRes = PTOptions.AutoResurrect and util.IsDeadFriend(unit) and util.ResurrectionSpells[GetClass("player")]
     if not binding then
         if targetCastable and wantToRes then
             RunBinding_Spell(emptySpell, unit)

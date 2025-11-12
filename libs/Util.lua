@@ -64,6 +64,19 @@ PowerTypeMap = {
     [3] = "energy"
 }
 
+ResurrectionSpells = {
+    ["PRIEST"] = "Resurrection",
+    ["PALADIN"] = "Redemption",
+    ["SHAMAN"] = "Ancestral Spirit",
+    ["DRUID"] = "Rebirth"
+}
+ResurrectionSpellsSet = {
+    ["Resurrection"] = "PRIEST",
+    ["Redemption"] = "PALADIN",
+    ["Ancestral Spirit"] = "SHAMAN",
+    ["Rebirth"] = "DRUID"
+}
+
 -- The default color Blizzard uses for text
 DefaultTextColor = {1, 0.82, 0}
 
@@ -1254,3 +1267,7 @@ end
 
 AllUnitsSet = ToSet(AllUnits)
 FocusUnitsSet = ToSet(FocusUnits)
+RunLater(function()
+    PTLocale.Values(ResurrectionSpells)
+    PTLocale.Keys(ResurrectionSpellsSet)
+end)

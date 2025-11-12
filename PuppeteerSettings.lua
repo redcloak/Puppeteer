@@ -145,7 +145,7 @@ function SetDefaults()
             },
             ["CastWhen"] = "Mouse Up", -- Mouse Up, Mouse Down
             ["CastWhenKey"] = "Key Up", -- Key Up, Key Down
-            ["AutoResurrect"] = Puppeteer.ResurrectionSpells[util.GetClass("player")] ~= nil,
+            ["AutoResurrect"] = util.ResurrectionSpells[util.GetClass("player")] ~= nil,
             ["UseHealPredictions"] = true,
             ["PVPFlagProtection"] = true,
             ["SetMouseover"] = true,
