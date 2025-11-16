@@ -30,8 +30,10 @@ PTUnitFrame.button = nil
 PTUnitFrame.auraPanel = nil
 PTUnitFrame.scrollingDamageFrame = nil -- Unimplemented
 PTUnitFrame.scrollingHealFrame = nil -- Unimplemented
-PTUnitFrame.auraIconPool = {} -- map: {"frame", "icon", "stackText"}
-PTUnitFrame.auraIcons = {} -- map: {"frame", "icon", "stackText"}
+PTUnitFrame.auraIconPool = {} -- array: {"frame", "icon", "stackText"}
+PTUnitFrame.auraButtonPool = {}
+PTUnitFrame.auraButtons = {}
+PTUnitFrame.auraIcons = {} -- array: {"frame", "icon", "stackText", "button"}
 
 PTUnitFrame.targetOutline = nil
 
@@ -57,8 +59,8 @@ PTUnitFrame.inSight = true
 PTUnitFrame.fakeStats = {} -- Used for displaying a fake party/raid
 
 function PTUnitFrame:New(unit, isCustomUnit)
-    local obj = setmetatable({unit = unit, isCustomUnit = isCustomUnit, auraIconPool = {}, 
-        auraIcons = {}, fakeStats = PTUnitFrame.GenerateFakeStats()}, self)
+    local obj = setmetatable({unit = unit, isCustomUnit = isCustomUnit, auraIconPool = {}, auraButtonPool = {}, 
+        auraButtons = {}, auraIcons = {}, fakeStats = PTUnitFrame.GenerateFakeStats()}, self)
     return obj
 end
 
@@ -164,6 +166,9 @@ end
 function PTUnitFrame:RegisterClicks()
     local buttons = PTOptions.CastWhen == "Mouse Up" and util.GetUpButtons() or util.GetDownButtons()
     self.button:RegisterForClicks(unpack(buttons))
+    for _, button in ipairs(self.auraButtons) do
+        button:RegisterForClicks(unpack(buttons))
+    end
 end
 
 function PTUnitFrame:UpdateAll()
@@ -761,74 +766,7 @@ function PTUnitFrame:UpdatePower()
     self.powerText:SetText(text)
 end
 
--- Now, I know what you're thinking. Why would you ever want to do this?
--- Couldn't you just listen to OnEnter events? Well yes, you could, but that captures all mouse events, obscuring the frame button.
--- Okay, well then let's forward mouse events to the frame, why not? Hah, great idea, except one little unavoidable issue...
--- If you start holding down your mouse and then either you move your mouse out of the aura or the aura moves, the click event
--- does not register. Instead of casting a spell, you lose your input and end up very confused.
--- The performance impact isn't ideal, but it's better than losing inputs.
 AuraTooltip = CreateFrame("GameTooltip", "PTAuraTooltip", UIParent, "GameTooltipTemplate")
-
-local MouseIsOver = MouseIsOver
-local GetMouseFocus = GetMouseFocus
-
-local LastFocus
-local MouseoverUnitFrame
-local MouseoverAuraFrame
-local MouseoverAuraDirty
-
-local PTAuraTooltipUpdater = CreateFrame("Frame", "PTAuraTooltipUpdater")
-
-local function PTAuraTooltipUpdater_OnUpdate()
-    local focus = GetMouseFocus()
-    if MouseoverAuraFrame then
-        if focus == LastFocus and not MouseoverAuraDirty and MouseIsOver(MouseoverAuraFrame) then
-            return -- We're hovering over the cached aura frame, no need for additional checks
-        end
-        AuraTooltip:Hide()
-        MouseoverAuraFrame = nil
-        MouseoverAuraDirty = false
-    end
-
-    local unitFrame
-    if focus == LastFocus and MouseoverUnitFrame and MouseIsOver(MouseoverUnitFrame.rootContainer) then
-        unitFrame = MouseoverUnitFrame -- We can avoid scanning for a unit frame if we're hovering the cached one still
-    else
-        MouseoverUnitFrame = nil
-    end
-
-    LastFocus = focus
-
-    if not unitFrame then
-        if not focus then
-            return
-        end
-        if focus.IsPTUnitFrame then
-            unitFrame = focus.unitFrame
-        elseif focus.IsPTUnitFrameGroup then
-            for _, ui in pairs(focus.group.uis) do
-                if ui:IsShown() and MouseIsOver(ui.rootContainer) then
-                    unitFrame = ui
-                    break
-                end
-            end
-        end
-    end
-
-    if unitFrame then
-        MouseoverUnitFrame = unitFrame
-        if MouseIsOver(unitFrame.auraPanel) then
-            for _, icon in ipairs(unitFrame.auraIcons) do
-                if MouseIsOver(icon.frame) then
-                    unitFrame:ApplyAuraTooltip(icon.frame)
-                    MouseoverAuraFrame = icon.frame
-                    return
-                end
-            end
-        end
-    end
-end
-PTAuraTooltipUpdater:SetScript("OnUpdate", PTAuraTooltipUpdater_OnUpdate)
 
 local AURA_DURATION_TEXT_FLASH_THRESHOLD = 5
 local AURA_DURATION_TEXT_LOW_THRESHOLD = 30
@@ -941,8 +879,77 @@ function PTUnitFrame:GetUnusedAura()
         aura = self:AllocateAura()
     end
     aura.frame:SetAlpha(aura.frame:GetParent():GetAlpha())
+    aura.button = self:GetUnusedAuraButton()
+    aura.button.AuraOwner = aura
+    aura.button:Show()
     table.insert(self.auraIcons, aura)
     return aura
+end
+
+function PTUnitFrame:GetUnusedAuraButton()
+    local button
+    if table.getn(self.auraButtonPool) > 0 then
+        button = table.remove(self.auraButtonPool, table.getn(self.auraButtonPool))
+    else
+        button = CreateFrame("Button", nil, self.button)
+        button:RegisterForClicks(unpack(PTOptions.CastWhen == "Mouse Up" and util.GetUpButtons() or util.GetDownButtons()))
+        button.unitFrame = self
+        button:SetScript("OnClick", PTUnitFrame.AuraButton_OnClick)
+        button:SetScript("OnMouseDown", PTUnitFrame.AuraButton_OnMouseDown)
+        button:SetScript("OnMouseUp", PTUnitFrame.AuraButton_OnMouseUp)
+        button:SetScript("OnEnter", PTUnitFrame.AuraButton_OnEnter)
+        button:SetScript("OnLeave", PTUnitFrame.AuraButton_OnLeave)
+        table.insert(self.auraButtons, button)
+    end
+    return button
+end
+
+function PTUnitFrame.AuraButton_OnClick()
+    local ufButton = this.unitFrame.button
+    if MouseIsOver(ufButton) then
+        ufButton:GetScript("OnClick")()
+    end
+end
+
+function PTUnitFrame.AuraButton_OnMouseDown()
+    local ufButton = this.unitFrame.button
+    if MouseIsOver(ufButton) then
+        this:ClearAllPoints()
+        this:SetAllPoints(ufButton)
+        this.IsHeld = true
+        ufButton:GetScript("OnMouseDown")()
+    end
+end
+
+function PTUnitFrame.AuraButton_OnMouseUp()
+    this:ClearAllPoints()
+    this.IsHeld = nil
+    if this.AuraOwner then
+        this:SetAllPoints(this.AuraOwner.frame)
+    else
+        local this = this
+        PTUtil.RunLater(function()
+            this:Hide()
+            
+            table.insert(this.unitFrame.auraButtonPool, this)
+        end)
+    end
+    this.unitFrame.button:GetScript("OnMouseUp")()
+end
+
+function PTUnitFrame.AuraButton_OnEnter()
+    local ufButton = this.unitFrame.button
+    if this.AuraOwner then
+        this.unitFrame:ApplyAuraTooltip(this.AuraOwner.frame)
+    end
+    if MouseIsOver(ufButton) then
+        ufButton:GetScript("OnEnter")()
+    end
+end
+
+function PTUnitFrame.AuraButton_OnLeave()
+    AuraTooltip:Hide()
+    this.unitFrame.button:GetScript("OnLeave")()
 end
 
 function PTUnitFrame:ReleaseAuras()
@@ -961,6 +968,15 @@ function PTUnitFrame:ReleaseAuras()
         local stackText = aura.stackText
         stackText:ClearAllPoints()
         stackText:SetText("")
+
+        local button = aura.button
+        aura.button = nil
+        button.AuraOwner = nil
+        if not button.IsHeld then -- Don't release button if the user is currently holding it
+            button:ClearAllPoints()
+            button:Hide()
+            table.insert(self.auraButtonPool, button)
+        end
 
         if aura.durationEnabled then
             aura.durationText:SetSeconds(nil)
@@ -1062,9 +1078,6 @@ function PTUnitFrame:UpdateAuras()
     compost:Reclaim(buffs)
     compost:Reclaim(debuffs)
     compost:Reclaim(typedDebuffs)
-    if MouseoverAuraFrame then
-        MouseoverAuraDirty = true
-    end
 end
 
 function PTUnitFrame:ApplyAuraTooltip(auraFrame)
@@ -1138,6 +1151,9 @@ function PTUnitFrame:CreateAura(aura, name, index, texturePath, stacks, auraType
     local icon = aura.icon
     icon:SetAllPoints(frame)
     icon:SetTexture(texturePath)
+
+    local button = aura.button
+    button:SetAllPoints(frame)
 
     if aura.durationEnabled then
         local overlay = aura.overlay
@@ -1310,8 +1326,6 @@ function PTUnitFrame:Initialize()
 
     local button = CreateFrame("Button", "$parentButton", healthBar, "UIPanelButtonTemplate")
     self.button = button
-    button.IsPTUnitFrame = true
-    button.unitFrame = self
     local healthText = button:GetFontString()
     self.healthText = healthText
     healthText:ClearAllPoints()

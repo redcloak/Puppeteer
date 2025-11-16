@@ -132,8 +132,6 @@ end
 function PTUnitFrameGroup:Initialize()
     local container = CreateFrame("Frame", "PTUnitFrameGroupContainer_"..self.name, UIParent)
     self.container = container
-    container.IsPTUnitFrameGroup = true
-    container.group = self
     container:EnableMouse(true)
     container:SetMovable(true)
     container:SetUserPlaced(false)
