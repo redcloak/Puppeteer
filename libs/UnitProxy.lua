@@ -453,6 +453,12 @@ function CreateUnitProxies()
             return UnitXP(a1, a2, a3, a4, a5)
         end
     end)
+    CustomProxy("UnitGUID", function()
+        return function(unit)
+            local _, guid = UnitExists(unit)
+            return guid
+        end
+    end)
 
     UpdateImports()
 end

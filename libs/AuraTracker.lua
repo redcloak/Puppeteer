@@ -39,6 +39,8 @@ local trackedCastedAuras = {
     ["Inner Fire"] = 10 * 60,
     -- Priest: Offensive
     ["Shadow Word: Pain"] = 18,
+    ["Holy Fire"] = 10,
+    ["Mind Control"] = 60,
     -- Paladin
     ["Blessing of Protection"] = 10,
     ["Hand of Protection"] = 10,

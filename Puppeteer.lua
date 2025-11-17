@@ -750,6 +750,7 @@ function CheckGroup()
     for _, ui in ipairs(AllUnitFrames) do
         if ui:IsShown() then
             ui:UpdateRange()
+            ui:UpdateSight()
             ui:UpdateAuras()
             ui:UpdateIncomingHealing()
             ui:UpdateOutline()

@@ -151,7 +151,7 @@ function PTUnit:UpdatePVP()
         return
     end
     local shouldDisplay = UnitIsPVP(self.Unit) and (not IsInInstance() or not UnitIsVisible(self.Unit))
-    if self.DisplayPVP ~= shouldDisplay then
+    if self.DisplayPVP ~= (shouldDisplay == 1 or shouldDisplay == true) then
         self.DisplayPVP = shouldDisplay
         return true
     end

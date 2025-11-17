@@ -140,7 +140,7 @@ function SetDefaults()
                 ["DistanceUpdateInterval"] = 0.1, -- How often distance tracked units are updated
                 ["SightUpdateInterval"] = 0.1, -- How often sight tracked units are updated
                 ["MinDistanceTracking"] = 20, -- The minimum distance to start closely tracking distance
-                ["MaxDistanceTracking"] = 60, -- The maxmimum distance to start closely tracking distance
+                ["MaxDistanceTracking"] = 80, -- The maxmimum distance to start closely tracking distance
                 ["MaxSightTracking"] = 80 -- The maximum distance to closely track sight
             },
             ["CastWhen"] = "Mouse Up", -- Mouse Up, Mouse Down
@@ -349,7 +349,7 @@ DefaultTrackedHealingDebuffs = {"Mortal Strike", "Wound Poison", "Curse of the D
 DefaultTrackedBuffs = {
     "Blessing of Protection", "Hand of Protection", "Divine Protection", "Divine Shield", "Divine Intervention", -- Paladin
         "Bulwark of the Righteous", "Blessing of Sacrifice", "Hand of Sacrifice",
-    "Power Infusion", "Spirit of Redemption", "Inner Focus", "Abolish Disease", "Power Word: Shield", -- Priest
+    "Power Infusion", "Spirit of Redemption", "Inner Focus", "Abolish Disease", "Power Word: Shield", "Mind Control", -- Priest
     "Shield Wall", "Recklessness", "Last Stand", -- Warrior
     "Evasion", "Vanish", -- Rogue
     "Deterrence", "Feign Death", "Mend Pet", -- Hunter
@@ -370,7 +370,7 @@ DefaultClassTrackedBuffs = {
         "Champion's Bond", "Fear Ward", "Inner Fire", "Renew", "Greater Heal", "Lightwell Renew", "Inspiration", 
         "Fade", "Reactive Fade", "Spirit Tap", "Enlighten", "Enlightened"},
     ["WARRIOR"] = {"Battle Shout"},
-    ["DRUID"] = {"Gift of the Wild", "Mark of the Wild", "Thorns", "Rejuvenation", "Regrowth"},
+    ["DRUID"] = {"Gift of the Wild", "Mark of the Wild", "Thorns", "Rejuvenation", "Regrowth", "Blooming Bud"},
     ["SHAMAN"] = {"Water Walking", "Healing Way", "Ancestral Fortitude"},
     ["MAGE"] = {"Arcane Brilliance", "Arcane Intellect", "Frost Armor", "Ice Armor", "Mage Armor"},
     ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield", "Consume Shadows"},
@@ -381,13 +381,15 @@ DefaultClassTrackedBuffs = {
 -- Tracked debuffs for all classes
 DefaultTrackedDebuffs = {
     "Forbearance", -- Paladin
-    "Silence", -- Priest
+    "Silence", "Mind Control", -- Priest
     "Death Wish", "Intimidating Shout", -- Warrior
     "Enrage", "Entangling Roots", -- Druid
     "Frost Nova", -- Mage
     "Fear", -- Warlock
     "Recently Bandaged", "Resurrection Sickness", "Ghost", "Net", -- Generic
     "Deafening Screech", "Hooked Net", "Web Explosion", "Chains of Ice", -- Applied by mobs
+    "Bellowing Roar", -- Onyxia/Nefarian
+    "Phantom Scream", "Smoke Bomb", -- Kara10
     "Corrupted Mind", "Frost Blast" -- Naxxramas
 }
 -- Tracked debuffs for specific classes
