@@ -528,9 +528,17 @@ function CreateTab_Options_Advanced(panel)
     factory:checkbox("(TWoW) Auto Role", {"If enabled, the Role Action menu shows auto role detection options"}, 
         "Global.Experiments.AutoRole",
         Puppeteer.InitRoleDropdown)
+    factory:checkbox("(SuperWoW) Cast Icons", {"If enabled, you will see incoming casts over unit frames", 
+            "This feature is highly subject to changes", "Requires SuperWoW!"},
+        "Global.Experiments.CastIcons",
+        function()
+            if PTHealPredict then
+                PTHealPredict.RemoveAllCastIcons()
+            end
+        end)
 
     local scriptsLabel = CreateLabel(container, "Load & Postload Scripts")
-        :SetPoint("TOP", container, "TOP", 0, -105)
+        :SetPoint("TOP", container, "TOP", 0, -125)
         :SetFontSize(14)
 
     local loadScriptInfo = CreateLabel(container, "The Load Script runs after profiles are initialized, but before UIs are created, "..

@@ -296,7 +296,8 @@ function SetDefaults()
         local defaults = {
             ["ShowLoadMessage"] = true,
             ["Experiments"] = {
-                ["AutoRole"] = false
+                ["AutoRole"] = false,
+                ["CastIcons"] = false
             },
             ["OptionsVersion"] = OPTIONS_VERSION
         }

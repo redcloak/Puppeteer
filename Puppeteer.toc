@@ -83,6 +83,8 @@ gui\component\NewLoadout.lua
 gui\component\LoadScriptEditor.lua
 gui\Settings.lua
 
+CastIcon.lua
+
 libs\GuidRoster.lua
 libs\AuraTracker.lua
 libs\PTUnit.lua

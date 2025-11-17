@@ -167,6 +167,17 @@ function AddIncomingMultiCast(targets, caster, spellID, healAmount, castTime)
     end
 end
 
+local castIcons = {}
+function RemoveAllCastIcons()
+    for caster, icons in pairs(castIcons) do
+        for _, icon in ipairs(castIcons[caster]) do
+            icon:End(false)
+        end
+        compost:Recycle(icons)
+        castIcons[caster] = nil
+    end
+end
+
 function AddIncomingCast(target, caster, spellID, healAmount, castTime, multi)
     if not multi then
         Casts[caster] = compost:AcquireHash(
@@ -188,9 +199,30 @@ function AddIncomingCast(target, caster, spellID, healAmount, castTime, multi)
     )
 
     UpdateTarget(target)
+
+
+    if PTGlobalOptions.Experiments.CastIcons then
+        local icon = PTGuiLib.Get("puppeteer_cast_icon")
+        local spellName, _, tex = SpellInfo(spellID)
+        local targetFrame
+        for f in Puppeteer.UnitFrames(target) do
+            if f.owningGroup:GetContainer():IsShown() then
+                targetFrame = f
+                break
+            end
+        end
+        if not targetFrame then
+            return
+        end
+        icon:Start(spellName, tex, castTime / 1000, caster, healAmount, targetFrame)
+        if not castIcons[caster] then
+            castIcons[caster] = compost:GetTable()
+        end
+        table.insert(castIcons[caster], icon)
+    end
 end
 
-function RemoveIncomingCast(caster)
+function RemoveIncomingCast(caster, successful)
     local cast = Casts[caster]
     if cast then
         for _, target in ipairs(cast["targets"]) do
@@ -202,6 +234,14 @@ function RemoveIncomingCast(caster)
         compost:Reclaim(cast["targets"])
         compost:Reclaim(cast)
         Casts[caster] = nil
+
+        if castIcons[caster] then
+            for _, icon in ipairs(castIcons[caster]) do
+                icon:End(successful)
+            end
+            compost:Reclaim(castIcons[caster])
+            castIcons[caster] = nil
+        end
     end
 end
 
@@ -387,6 +427,8 @@ local function getSelfGuid()
     return guid
 end
 
+local autoShotName = PTLocale.Translate("Auto Shot")
+
 local eventFrame = CreateFrame("Frame", "PTHealPredictCasts")
 eventFrame:RegisterEvent("UNIT_CASTEVENT")
 eventFrame:SetScript("OnEvent", function()
@@ -469,13 +511,15 @@ eventFrame:SetScript("OnEvent", function()
     -- Check started cast spell ID to prevent instant mid-cast spells from removing incoming healing
     local currentCast = GetCurrentCast(caster)
     if event == "CAST" and currentCast and currentCast["spellID"] == spellID then
-        RemoveIncomingCast(caster)
+        RemoveIncomingCast(caster, true)
         LastCastedSpells[UnitName(caster)] = compost:AcquireHash("unit", caster, "target", target, "spellID", spellID)
         return
     end
 
     if event == "START" or event == "FAIL" then
-        RemoveIncomingCast(caster)
+        if spellName ~= autoShotName then -- Don't remove the cast when Auto Shot fails
+            RemoveIncomingCast(caster, event == "START")
+        end
     end
 
     if event == "START" then
