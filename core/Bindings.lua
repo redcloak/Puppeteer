@@ -536,15 +536,18 @@ local preScript = "local unit = PTScriptUnit;"..
                 "local unitData = PTUnit.Get(unit);"..
                 "local unitFrame = PTScriptUnitFrame;"
 BindingScriptCache = {}
-BindingEnvironment = setmetatable({_G = _G, api = BindingScriptAPI, print = function(...)
-    local str = table.getn(arg) > 0 and tostring(arg[1]) or ""
-    if table.getn(arg) > 1 then
-        for i = 2, table.getn(arg) do
-            str = str..tostring(arg[i])
+BindingEnvironment = setmetatable({_G = _G, 
+    api = BindingScriptAPI, 
+    print = function(...)
+        local str = table.getn(arg) > 0 and tostring(arg[1]) or ""
+        if table.getn(arg) > 1 then
+            for i = 2, table.getn(arg) do
+                str = str..tostring(arg[i])
+            end
         end
+        DEFAULT_CHAT_FRAME:AddMessage(str)
     end
-    DEFAULT_CHAT_FRAME:AddMessage(str)
-end}, {__index = PTUnitProxy or _G})
+}, {__index = PTUtil})
 local targetedScript
 local function targetedScriptFunc()
     local ok, result = pcall(targetedScript)

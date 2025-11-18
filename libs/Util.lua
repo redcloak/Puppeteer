@@ -672,6 +672,56 @@ else
     GetAuraInfo = ScanAuraInfo
 end
 
+function GetActionSlotName(slot)
+    _G["PTScanningTooltipTextLeft1"]:SetText("")
+    ScanningTooltip:SetAction(slot)
+    return _G["PTScanningTooltipTextLeft1"]:GetText() or ""
+end
+
+local actionCache = {}
+function FindAction(name)
+    if actionCache[name] then
+        local data = actionCache[name]
+        if GetActionTexture(data.slot) == data.texture then
+            return data.slot
+        end
+        actionCache[name] = nil
+    end
+    for i = 1, 120 do
+        if GetActionTexture(i) then
+            local slotName = GetActionSlotName(i)
+            if slotName == name then
+                actionCache[name] = {
+                    slot = i,
+                    texture = GetActionTexture(i)
+                }
+                return i
+            end
+        end
+    end
+end
+
+function IsCurrentActionByName(name)
+    local slot = FindAction(name)
+    if slot then
+        return IsCurrentAction(slot)
+    end
+end
+
+function IsAutoRepeatActionByName(name)
+    local slot = FindAction(name)
+    if slot then
+        return IsAutoRepeatAction(slot)
+    end
+end
+
+-- Casts an action if it's not already being used. Very useful for auto attack abilities. They must be somewhere on your bars.
+function CastActionByName(name, target)
+    if not (IsAutoRepeatActionByName(name) or IsCurrentActionByName(name)) then
+        CastSpellByName(name, target)
+    end
+end
+
 -- Returns an array of the units in the party number or the unit's raid group
 function GetRaidPartyMembers(partyNumberOrUnit)
     if not RAID_SUBGROUP_LISTS then
