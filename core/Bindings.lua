@@ -492,6 +492,21 @@ function RunBinding_Spell(binding, unit)
         end
     end
 
+    if spell == nil or spell == "" then
+        return
+    end
+
+    if ShouldTriggerPVPFlagProtection(unit, spell) then
+        if MouseoverFrame then
+            PVPProtectMenu:SetToggleState(false)
+            local frame = MouseoverFrame:GetRootContainer()
+            PVPProtectMenu:SetToggleState(true, frame, frame:GetWidth(), frame:GetHeight())
+            PVPProtectMenu:SetKeepOpen(true)
+        end
+        PlaySound("igMainMenuOpen")
+        return
+    end
+
     RunTargetedAction(binding, unit, setupTargetedCast(spell, unit), not util.IsSuperWowPresent())
 end
 
@@ -698,14 +713,6 @@ function RunBinding(binding, unit, unitFrame)
     local bindingType = binding.Type
     if bindingType == "SPELL" then
         if targetCastable then
-            if ShouldTriggerPVPFlagProtection(unit, binding.Data) then
-                PVPProtectMenu:SetToggleState(false)
-                local frame = unitFrame:GetRootContainer()
-                PVPProtectMenu:SetToggleState(true, frame, frame:GetWidth(), frame:GetHeight())
-                PVPProtectMenu:SetKeepOpen(true)
-                PlaySound("igMainMenuOpen")
-                return
-            end
             RunBinding_Spell(binding, unit)
         end
     elseif bindingType == "ACTION" then

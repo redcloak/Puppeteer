@@ -652,12 +652,8 @@ function UnitFrame_OnClick(button, unit, unitFrame)
         end
         return
     end
-    local targetCastable = UnitIsConnected(unit) and UnitIsVisible(unit)
-    local wantToRes = PTOptions.AutoResurrect and util.IsDeadFriend(unit) and util.ResurrectionSpells[GetClass("player")]
     if not binding then
-        if targetCastable and wantToRes then
-            RunBinding_Spell(emptySpell, unit)
-        end
+        RunBinding_Spell(emptySpell, unit)
         return
     end
 
