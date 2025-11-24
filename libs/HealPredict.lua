@@ -202,7 +202,6 @@ function AddIncomingCast(target, caster, spellID, healAmount, castTime, multi)
 
 
     if PTGlobalOptions.Experiments.CastIcons then
-        local icon = PTGuiLib.Get("puppeteer_cast_icon")
         local spellName, _, tex = SpellInfo(spellID)
         local targetFrame
         for f in Puppeteer.UnitFrames(target) do
@@ -214,6 +213,7 @@ function AddIncomingCast(target, caster, spellID, healAmount, castTime, multi)
         if not targetFrame then
             return
         end
+        local icon = PTGuiLib.Get("puppeteer_cast_icon")
         icon:Start(spellName, tex, castTime / 1000, caster, healAmount, targetFrame)
         if not castIcons[caster] then
             castIcons[caster] = compost:GetTable()

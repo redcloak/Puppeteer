@@ -51,7 +51,6 @@ function PTCastIcon:OnDispose()
     self.castOrder:Show()
     self.overhealIndicator:Show()
     self:GetHandle():SetAlpha(1)
-    self:GetHandle():ClearAllPoints()
     self:SetScript("OnUpdate", nil)
     local index = PTUtil.KeyOf(self.castIcons, self)
     if index ~= nil then
@@ -66,6 +65,10 @@ end
 
 function PTCastIcon:GetProgress()
     return math.min((GetTime() - self.startTime) / self.time, 1)
+end
+
+function PTCastIcon:GetOvertime()
+    return GetTime() - self.endTime
 end
 
 local importantCasts = {
@@ -116,7 +119,7 @@ function PTCastIcon:Start(spellName, spellTexture, time, unit, healAmount, unitF
     local healPowerSizeMult = 9.2
     local size = math.max(math.min(startSize + (healPower * healPowerSizeMult), maxSize), startSize)
     if PTUtil.ResurrectionSpellsSet[spellName] or importantCasts[spellName] then
-        size = 13
+        size = 14
         self.overhealIndicator:Hide()
     end
     Puppeteer.print("Size: "..size)
@@ -126,7 +129,7 @@ function PTCastIcon:Start(spellName, spellTexture, time, unit, healAmount, unitF
         order:SetFont("Fonts\\FRIZQT__.TTF", size, "OUTLINE")
         order:SetTextColor(1, 1, 0)
     else
-        order:SetFont("Fonts\\FRIZQT__.TTF", size - 2, "OUTLINE")
+        order:SetFont("Fonts\\FRIZQT__.TTF", size - 1, "OUTLINE")
         order:SetTextColor(0.9, 0.9, 0.9)
     end
     if not unitFrame.castIcons then
