@@ -364,7 +364,7 @@ function InitRoleDropdown()
                     return
                 end
                 if lastMassRole + 6 > GetTime() then
-                    DEFAULT_CHAT_FRAME:AddMessage("Please wait a moment before requesting roles again")
+                    Puppeteer.Info("Please wait a moment before requesting roles again")
                     return
                 end
                 lastMassRole = GetTime()

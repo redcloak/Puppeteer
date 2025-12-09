@@ -129,7 +129,7 @@ function CreateTab_Bindings()
         :SetText("New")
         :OnClick(function(self)
             if util.GetTableSize(Puppeteer.GetBindingLoadouts()) >= 20 then
-                DEFAULT_CHAT_FRAME:AddMessage("You cannot create any more loadouts!")
+                Puppeteer.Info("You cannot create any more loadouts!")
                 return
             end
 
@@ -176,7 +176,7 @@ function CreateTab_Bindings()
                 end
             end
             if not anotherLoadoutName then
-                DEFAULT_CHAT_FRAME:AddMessage("Cannot delete the only loadout")
+                Puppeteer.Info("Cannot delete the only loadout")
                 return
             end
             local dialog = PTGuiLib.Get("simple_dialog", TabFrame)
