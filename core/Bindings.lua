@@ -430,7 +430,7 @@ PVPProtectMenu:SetOptions({
 })
 
 function ShouldTriggerPVPFlagProtection(unit, spell)
-    return PTOptions.PVPFlagProtection and not IsInInstance() and UnitIsPVP(unit) and UnitIsPlayer(unit) 
+    return PTOptions.PVPFlagProtection and not util.IsReallyInInstance() and UnitIsPVP(unit) and UnitIsPlayer(unit) 
         and not UnitIsPVP("player") and PVPProtectOverrideTime < GetTime() and not util.ResurrectionSpellsSet[spell]
 end
 

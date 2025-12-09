@@ -1199,6 +1199,11 @@ function GetPowerColor(unit)
     return PowerColors[GetPowerType(unit)]
 end
 
+-- You never really know these days
+function IsReallyInInstance()
+    return IsInInstance() and not InstanceWorldZones[GetRealZoneText()]
+end
+
 -- Returns distance if UnitXP SP3 or SuperWoW is present;
 -- 0 if unit is offline, or unit is enemy and SuperWoW is the distance provider;
 -- 9999 if unit is not visible or UnitXP SP3 is not present.
@@ -1339,3 +1344,5 @@ RunLater(function()
     PTLocale.Values(ResurrectionSpells)
     PTLocale.Keys(ResurrectionSpellsSet)
 end)
+
+InstanceWorldZones = ToSet({"Winter Veil Vale"}) -- Why is this an instance??

@@ -324,7 +324,7 @@ function PTUnitFrame:UpdateRaidMark()
 end
 
 function PTUnitFrame:UpdatePVP()
-    if UnitIsPVP(self.unit) and (not IsInInstance() or not UnitIsVisible(self.unit)) then
+    if UnitIsPVP(self.unit) and (not util.IsReallyInInstance() or not UnitIsVisible(self.unit)) then
         local faction = UnitFactionGroup(self.unit)
         if faction == "Alliance" then
             self.pvpIcon.icon:SetTexture("Interface\\TargetingFrame\\UI-PVP-Alliance")
