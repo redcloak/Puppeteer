@@ -13,6 +13,16 @@ function Init()
         :SetSize(425, 475)
         :SetSimpleBackground(PTGuiComponent.BACKGROUND_DIALOG)
         :SetSpecial()
+    
+    local origHide = TabFrame:GetHandle().Hide
+    TabFrame:GetHandle().Hide = function(self)
+        origHide(self)
+        if EditedBindings then
+            if Puppeteer.GetNumLoadoutChanges(Puppeteer.GetBindings(), EditedBindings) > 0 then
+                Puppeteer.Info("You have unsaved changes to your bindings")
+            end
+        end
+    end
 
     if PTOptions.Debug2 then
         TabFrame:Show()
@@ -96,6 +106,7 @@ function CreateTab_Bindings()
                             Puppeteer.SetSelectedBindingsLoadout(loadoutName)
                             EditedBindings = editedBindings
                             UpdateBindingsInterface()
+                            UpdateUnsavedChanges()
                             PopOverlayFrame()
                             dialog:Dispose()
                         end)
@@ -675,7 +686,7 @@ function CreateTab_Options_Mods(panel)
         :SetJustifyH("LEFT")
         :SetWidth(TEXT_WIDTH)
         :SetPoint("TOP", unitXPDetectedLabel, "BOTTOM", 0, -10)
-    local unitXPLink = CreateLinkEditbox(container, "https://github.com/jrc13245/UnitXP_SP3")
+    local unitXPLink = CreateLinkEditbox(container, "https://codeberg.org/konaka/UnitXP_SP3/wiki")
         :SetPoint("TOP", unitXPInfo, "BOTTOM", 0, -5)
         :SetSize(300, 20)
     local unitXPLinkLabel = CreateLabel(container, "Link:")

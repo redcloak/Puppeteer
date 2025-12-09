@@ -792,6 +792,10 @@ function IsRelevantUnit(unit)
     return AllUnitsSet[unit] ~= nil or GUIDCustomUnitMap[unit]
 end
 
+function Info(msg)
+    DEFAULT_CHAT_FRAME:AddMessage(colorize("[Puppeteer] ", 0.5, 1, 0.5)..colorize(msg, 1, 1, 0.4))
+end
+
 function print(msg)
     if not PTOptions or not PTOptions["Debug"] then
         return
