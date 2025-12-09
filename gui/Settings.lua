@@ -916,7 +916,7 @@ function CreateTab_Customize()
     layout:offset(-65, 0):layoutComponent(styleDropdown)
     layout:offset(65, 0)
     StyleOverrideDropdown = styleDropdown
-    SetSelectedStyleOverride("Default")
+    SetSelectedStyleOverride(PTProfileManager.DEFAULT_PROFILE_NAME)
 
     local reloadUI = PTGuiLib.Get("button", container)
         :SetPoint("LEFT", styleDropdown, "RIGHT", 10, 0)

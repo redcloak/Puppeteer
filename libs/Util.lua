@@ -206,6 +206,24 @@ function CloneTable(table, deep)
     return clone
 end
 
+function ApplyTableDiffs(t, overrides)
+    for k, v in pairs(overrides) do
+        if t[k] ~= nil then
+            if type(v) == "table" then
+                if type(t[k]) == "table" then
+                    ApplyTableDiffs(t[k], v)
+                else
+                    t[k] = CloneTable(v, true)
+                end
+            else
+                t[k] = v
+            end
+        else
+            t[k] = type(v) == "table" and CloneTable(v, true) or v
+        end
+    end
+end
+
 local compost = AceLibrary("Compost-2.0")
 
 -- Recursively reclaims all tables this table contains

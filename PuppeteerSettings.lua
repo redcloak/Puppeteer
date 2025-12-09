@@ -154,12 +154,12 @@ function SetDefaults()
             ["Hidden"] = false,
             ["HideWhileSolo"] = false,
             ["ChosenProfiles"] = {
-                ["Party"] = "Default",
-                ["Pets"] = "Default",
+                ["Party"] = PTProfileManager.DEFAULT_PROFILE_NAME,
+                ["Pets"] = PTProfileManager.DEFAULT_PROFILE_NAME,
                 ["Raid"] = "Small",
                 ["Raid Pets"] = "Small",
                 ["Target"] = "Long",
-                ["Focus"] = "Default"
+                ["Focus"] = PTProfileManager.DEFAULT_PROFILE_NAME
             },
             ["StyleOverrides"] = {},
             ["FrameOptions"] = {},

@@ -1552,7 +1552,7 @@ function PTUnitFrame:UpdateComponent(component, props, xOffset, yOffset)
 
     component:ClearAllPoints()
     if component.SetFont then -- Must be a FontString
-        component:SetWidth(math.min(props.MaxWidth, anchor:GetWidth()))
+        component:SetWidth(math.min(props:GetMaxWidth(), anchor:GetWidth()))
         component:SetHeight(props.FontSize * 1.25)
         component:SetFont("Fonts\\FRIZQT__.TTF", props.FontSize, props.Outline and "OUTLINE" or nil)
         if props.Outline then
