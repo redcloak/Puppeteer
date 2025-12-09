@@ -159,13 +159,18 @@ function SetDefaults()
                 ["Raid"] = "Small",
                 ["Raid Pets"] = "Small",
                 ["Target"] = "Long",
-                ["Focus"] = PTProfileManager.DEFAULT_PROFILE_NAME
+                ["Focus"] = PTProfileManager.DEFAULT_PROFILE_NAME,
+                ["Enemy"] = "Enemy"
             },
             ["StyleOverrides"] = {},
             ["FrameOptions"] = {},
             ["Scripts"] = {
                 ["OnLoad"] = "",
                 ["OnPostLoad"] = ""
+            },
+            ["Experiments"] = {
+                ["Enemy"] = false,
+                ["CastIcons"] = false
             },
             ["OptionsVersion"] = OPTIONS_VERSION
         }
@@ -296,8 +301,7 @@ function SetDefaults()
         local defaults = {
             ["ShowLoadMessage"] = true,
             ["Experiments"] = {
-                ["AutoRole"] = false,
-                ["CastIcons"] = false
+                ["AutoRole"] = false
             },
             ["OptionsVersion"] = OPTIONS_VERSION
         }
@@ -553,4 +557,8 @@ function SaveFramePositions()
         local anchor, _, _, x, y = group:GetContainer():GetPoint(1)
         PTOptions.FrameOptions[frameName].Position = {anchor, x, y}
     end
+end
+
+function IsExperimentEnabled(experiment)
+    return PTOptions.Experiments[experiment] or PTGlobalOptions.Experiments[experiment]
 end

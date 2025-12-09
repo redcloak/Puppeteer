@@ -64,6 +64,7 @@ core\OverrideBindings.lua
 core\Bindings.lua
 core\ActionBindings.lua
 core\Roles.lua
+core\EnemyTracker.lua
 
 PuppeteerSettings.lua
 PTUnitFrame.lua

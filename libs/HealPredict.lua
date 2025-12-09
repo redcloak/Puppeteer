@@ -201,7 +201,7 @@ function AddIncomingCast(target, caster, spellID, healAmount, castTime, multi)
     UpdateTarget(target)
 
 
-    if PTGlobalOptions.Experiments.CastIcons then
+    if PuppeteerSettings.IsExperimentEnabled("CastIcons") then
         local spellName, _, tex = SpellInfo(spellID)
         local targetFrame
         for f in Puppeteer.UnitFrames(target) do

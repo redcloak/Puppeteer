@@ -198,6 +198,7 @@ local function initUnitFrames()
     CreateUnitFrameGroup("Target", "all", TargetUnits, false, getSelectedProfile("Target"), false)
     if util.IsSuperWowPresent() then
         CreateUnitFrameGroup("Focus", "all", PTUnitProxy.CustomUnitsMap["focus"], false, getSelectedProfile("Focus"), false)
+        CreateUnitFrameGroup("Enemy", "all", PTUnitProxy.CustomUnitsMap["enemy"], false, getSelectedProfile("Enemy"), false)
     end
 
     local baseCondition = UnitFrameGroups["Target"].ShowCondition
@@ -367,6 +368,10 @@ function OnAddonLoaded()
     InitRoleDropdown()
     
     SetLFTAutoRoleEnabled(PTOptions.LFTAutoRole)
+
+    if util.IsSuperWowPresent() then
+        SetEnemyTrackingEnabled(PuppeteerSettings.IsExperimentEnabled("Enemy"))
+    end
 
     TestUI = PTOptions.TestUI
 

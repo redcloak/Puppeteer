@@ -525,12 +525,19 @@ function CreateTab_Options_Advanced(panel)
         :SetWidth(TEXT_WIDTH)
         :SetPoint("TOP", experimentsLabel, "BOTTOM", 0, -5)
     layout:offset(0, -70)
-    factory:checkbox("(TWoW) Auto Role", {"If enabled, the Role Action menu shows auto role detection options"}, 
+    factory:checkbox("(TWoW)\nAuto Role", {"If enabled, the Role Action menu shows auto role detection options", "Enabled Account-Wide"}, 
         "Global.Experiments.AutoRole",
         Puppeteer.InitRoleDropdown)
-    factory:checkbox("(SuperWoW) Cast Icons", {"If enabled, you will see incoming casts over unit frames", 
-            "This feature is highly subject to changes", "Requires SuperWoW!"},
-        "Global.Experiments.CastIcons",
+    factory:checkbox("(SuperWoW & UnitXP)\nEnemy Frames", 
+        {"If enabled, you will see an additional frame group with in-combat enemies", "Requires SuperWoW and UnitXP SP3", 
+        "Enabled Per-Character"},
+        "Experiments.Enemy",
+        function()
+            Puppeteer.SetEnemyTrackingEnabled(PuppeteerSettings.IsExperimentEnabled("Enemy"))
+        end)
+    factory:checkbox("(SuperWoW)\nCast Icons", {"If enabled, you will see incoming casts over unit frames", 
+            "This feature is highly subject to changes", "Requires SuperWoW!", "Enabled Per-Character"},
+        "Experiments.CastIcons",
         function()
             if PTHealPredict then
                 PTHealPredict.RemoveAllCastIcons()
@@ -538,7 +545,7 @@ function CreateTab_Options_Advanced(panel)
         end)
 
     local scriptsLabel = CreateLabel(container, "Load & Postload Scripts")
-        :SetPoint("TOP", container, "TOP", 0, -125)
+        :SetPoint("TOP", container, "TOP", 0, -160)
         :SetFontSize(14)
 
     local loadScriptInfo = CreateLabel(container, "The Load Script runs after profiles are initialized, but before UIs are created, "..

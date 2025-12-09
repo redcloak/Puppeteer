@@ -18,7 +18,7 @@ Profiles = {}
 
 DefaultProfileOrder = {
     "Default", "Default (Short Bar)", "Small", "Very Small", "Very Small (Horizontal)", "Long", "Long (Small)", 
-    "Long (Integrated)", "Legacy"
+    "Long (Integrated)", "Enemy", "Enemy (Small)", "Legacy"
 }
 DefaultProfileOrder = util.ToSet(DefaultProfileOrder, true)
 
@@ -600,6 +600,96 @@ function InitializeDefaultProfiles()
         ["PaddingBottom"] = 0,
         ["TrackedAurasAlignment"] = "BOTTOM",
         ["HealthBarHeight"] = 35,
+    })
+
+    CreateProfile("Enemy", "Default", {
+        ["PVPIcon"] = {
+            ["OffsetX"] = -8,
+            ["OffsetY"] = -4,
+        },
+        ["OutOfRangeThreshold"] = {
+            ["Hostile"] = 31,
+        },
+        ["AuraTracker"] = {
+            ["Height"] = 13,
+        },
+        ["RoleIcon"] = {
+            ["OffsetX"] = -5,
+            ["Width"] = 10,
+            ["Height"] = 10,
+            ["OffsetY"] = 5,
+        },
+        ["IncomingHealText"] = {
+            ["FontSize"] = 7,
+            ["AlignmentH"] = "RIGHT",
+            ["OffsetY"] = -6,
+        },
+        ["NameText"] = {
+            ["PaddingH"] = 1,
+            ["AlignmentH"] = "LEFT",
+            ["MaxWidth"] = 75,
+            ["PaddingV"] = 2,
+        },
+        ["Width"] = 120,
+        ["ShowDistanceThreshold"] = {
+            ["Hostile"] = 20,
+        },
+        ["MissingHealthDisplay"] = "Hidden",
+        ["PowerDisplay"] = "Hidden",
+        ["RangeText"] = {
+            ["FontSize"] = 10,
+            ["OffsetY"] = 2,
+            ["AlignmentV"] = "BOTTOM",
+        },
+        ["HealthTexts"] = {
+            ["Missing"] = {
+                ["FontSize"] = 9,
+                ["PaddingH"] = 4,
+            },
+            ["Normal"] = {
+                ["PaddingH"] = 1,
+                ["AlignmentH"] = "RIGHT",
+                ["OffsetY"] = 0,
+                ["PaddingV"] = 2,
+                ["AlignmentV"] = "TOP",
+            },
+            ["WithMissing"] = {
+                ["FontSize"] = 9,
+                ["PaddingH"] = 4,
+                ["AlignmentH"] = "LEFT",
+            },
+        },
+        ["PowerText"] = {
+            ["AlignmentH"] = "RIGHT",
+        },
+        ["LineOfSightIcon"] = {
+            ["Opacity"] = 70,
+        },
+        ["MaxUnitsInAxis"] = 10,
+        ["PowerBarHeight"] = 0,
+        ["HealthBarHeight"] = 29,
+        ["RaidMarkIcon"] = {
+            ["AlignmentH"] = "CENTER",
+            ["OffsetY"] = 2,
+            ["PaddingV"] = 0,
+        },
+    })
+
+    CreateProfile("Enemy (Small)", "Enemy", {
+        ["AuraTracker"] = {
+            ["Height"] = 12,
+        },
+        ["NameText"] = {
+            ["FontSize"] = 9,
+            ["MaxWidth"] = 60,
+        },
+        ["Width"] = 100,
+        ["HealthTexts"] = {
+            ["Normal"] = {
+                ["FontSize"] = 9,
+            },
+        },
+        ["HealthBarHeight"] = 24,
     })
 
     CreateProfile("Legacy", "Default", {
