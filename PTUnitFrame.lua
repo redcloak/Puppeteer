@@ -1186,21 +1186,23 @@ function PTUnitFrame:CreateAura(aura, name, index, texturePath, stacks, auraType
             local debuffTime = cache.AuraTimes[name]
             local start = debuffTime["startTime"]
             local duration = debuffTime["duration"]
-            local durationUI = aura.duration
+            if start + duration + 4 > GetTime() then -- Don't display duration if the predicted time has lapsed
+                local durationUI = aura.duration
 
-            CooldownFrame_SetTimer(durationUI, start, duration, 1)
+                CooldownFrame_SetTimer(durationUI, start, duration, 1)
 
-            if duration < 60 then
-                durationUI.displayAt = PTOptions.ShowAuraTimesAt.Short
-            elseif duration <= 60 * 2 then
-                durationUI.displayAt = PTOptions.ShowAuraTimesAt.Medium
-            else
-                durationUI.displayAt = PTOptions.ShowAuraTimesAt.Long
+                if duration < 60 then
+                    durationUI.displayAt = PTOptions.ShowAuraTimesAt.Short
+                elseif duration <= 60 * 2 then
+                    durationUI.displayAt = PTOptions.ShowAuraTimesAt.Medium
+                else
+                    durationUI.displayAt = PTOptions.ShowAuraTimesAt.Long
+                end
+
+                -- To prevent having a frame where the duration is not updated
+                aura.durationText:SetSeconds(nil)
+                util.CallWithThis(durationUI, durationUI:GetScript("OnUpdateModel"))
             end
-
-            -- To prevent having a frame where the duration is not updated
-            aura.durationText:SetSeconds(nil)
-            util.CallWithThis(durationUI, durationUI:GetScript("OnUpdateModel"))
         end
     end
 end

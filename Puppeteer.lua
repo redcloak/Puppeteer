@@ -99,7 +99,7 @@ local function OpenUnitFramesIterator()
                 end
                 table.setn(uis, 0)
                 for _, unit in pairs(GuidUnitMap[unit]) do
-                    for _, frame in ipairs(PTUnitFrames[unit]) do
+                    for _, frame in ipairs(PTUnitFrames[unit] or EMPTY_UIS) do
                         table.insert(uis, frame)
                     end
                 end

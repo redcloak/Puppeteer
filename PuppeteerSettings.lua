@@ -139,7 +139,7 @@ function SetDefaults()
                 ["EvaluateInterval"] = 1.25, -- How often everyone is fully scanned to determine if they should be closely tracked
                 ["DistanceUpdateInterval"] = 0.1, -- How often distance tracked units are updated
                 ["SightUpdateInterval"] = 0.1, -- How often sight tracked units are updated
-                ["MinDistanceTracking"] = 20, -- The minimum distance to start closely tracking distance
+                ["MinDistanceTracking"] = 0, -- The minimum distance to start closely tracking distance
                 ["MaxDistanceTracking"] = 80, -- The maxmimum distance to start closely tracking distance
                 ["MaxSightTracking"] = 80 -- The maximum distance to closely track sight
             },
@@ -357,7 +357,7 @@ DefaultTrackedBuffs = {
     "Soulstone Resurrection", "Sacrifice", "Hellfire", "Health Funnel", -- Warlock
     "Ice Block", "Evocation", "Ice Barrier", "Mana Shield", -- Mage
     "Quel'dorei Meditation", "Grace of the Sunwell", -- Racial
-    "First Aid", "Food", "Drink", "Invulnerability", "Living Free Action" -- Generic
+    "First Aid", "Food", "Drink", "Invulnerability", "Living Free Action", "Rapid Healing" -- Generic
 }
 -- Tracked buffs for specific classes
 DefaultClassTrackedBuffs = {
@@ -388,9 +388,11 @@ DefaultTrackedDebuffs = {
     "Fear", -- Warlock
     "Recently Bandaged", "Resurrection Sickness", "Ghost", "Net", -- Generic
     "Deafening Screech", "Hooked Net", "Web Explosion", "Chains of Ice", -- Applied by mobs
+    "Fungal Spores", -- Stormwrought Castle
+    "Hex", -- Zul'Farrak
     "Bellowing Roar", -- Onyxia/Nefarian
     "Phantom Scream", "Smoke Bomb", -- Kara10
-    "Corrupted Mind", "Frost Blast" -- Naxxramas
+    "Corrupted Mind", "Frost Blast", "Veil of Darkness" -- Naxxramas
 }
 -- Tracked debuffs for specific classes
 DefaultClassTrackedDebuffs = {

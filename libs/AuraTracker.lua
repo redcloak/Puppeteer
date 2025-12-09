@@ -109,6 +109,7 @@ local trackedCastedAuras = {
     -- Generic
     ["First Aid"] = 8,
     ["Recently Bandaged"] = 60,
+    ["Rapid Healing"] = 15
 }
 PTLocale.Keys(trackedCastedAuras)
 
