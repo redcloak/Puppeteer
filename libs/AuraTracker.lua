@@ -146,9 +146,10 @@ local aoeClassAuras = PTUtil.ToSet({
 })
 PTLocale.Keys(aoeClassAuras)
 
-local function applyTimedAura(spellName, units)
+local function applyTimedAura(spellName, owner, units)
     for _, unit in ipairs(units) do
-        PTUnit.Get(unit).AuraTimes[spellName] = {["startTime"] = GetTime(), ["duration"] = trackedCastedAuras[spellName]}
+        PTUnit.Get(unit).AuraTimes[spellName] = {["startTime"] = GetTime(), ["duration"] = trackedCastedAuras[spellName], 
+            ["owner"] = owner, ["ownerName"] = UnitName(owner)}
         for ui in Puppeteer.UnitFrames(unit) do
             ui:UpdateAuras()
         end
@@ -174,7 +175,7 @@ castEventFrame:SetScript("OnEvent", function()
                 local targets = PTUtil.GetSurroundingPartyMembers(target, aoeAuras[spellName])
                 for _, unit in ipairs(targets) do
                     local units = PTGuidRoster.GetAllUnits(unit)
-                    applyTimedAura(spellName, units)
+                    applyTimedAura(spellName, caster, units)
                 end
             elseif aoeClassAuras[spellName] then
                 local class = PTUtil.GetClass(target)
@@ -182,16 +183,16 @@ castEventFrame:SetScript("OnEvent", function()
                 for _, unit in ipairs(targets) do
                     if PTUtil.GetClass(unit) == class then
                         local units = PTGuidRoster.GetAllUnits(unit)
-                        applyTimedAura(spellName, units)
+                        applyTimedAura(spellName, caster, units)
                     end
                 end
             else
-                applyTimedAura(spellName, units)
+                applyTimedAura(spellName, caster, units)
             end
 
             if additionalAuras[spellName] then
                 for _, aura in ipairs(additionalAuras[spellName]) do
-                    applyTimedAura(aura, units)
+                    applyTimedAura(aura, caster, units)
                 end
             end
         end

@@ -1111,7 +1111,11 @@ function PTUnitFrame:ApplyAuraTooltip(auraFrame)
                 time = math.ceil(seconds / 60)
                 format = SPELL_TIME_REMAINING_MIN_P1
             end
-            tooltip:AddLine(string.format(format, time))
+            if auraTime.ownerName and seconds > -10 then
+                tooltip:AddDoubleLine(string.format(format, time), "Caster: "..auraTime.ownerName)
+            else
+                tooltip:AddLine(string.format(format, time))
+            end
         end
         tooltip:Show()
     else
