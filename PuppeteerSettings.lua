@@ -85,7 +85,7 @@ function SetDefaults()
         _G.PTGlobalOptions = {}
     end
     
-    local OPTIONS_VERSION = 3
+    local OPTIONS_VERSION = 4
 
     if PTOptions.OptionsVersion and (PTOptions.OptionsVersion > OPTIONS_VERSION) then
         LetsCrashOut()
@@ -216,73 +216,93 @@ function SetDefaults()
             }
         }
 
-        local optionsUpgrades = {
-            {
-                version = 2,
-                upgrade = function(self, options)
-                    local upgraded = util.CloneTable(options, true)
-                    if options["ShowSpellsTooltip"] ~= nil then
-                        if not options["SpellsTooltip"] then
-                            upgraded["SpellsTooltip"] = {}
+        if PTOptions.OptionsVersion and PTOptions.OptionsVersion < OPTIONS_VERSION then
+            local optionsUpgrades = {
+                {
+                    version = 2,
+                    upgrade = function(self, options)
+                        local upgraded = util.CloneTable(options, true)
+                        if options["ShowSpellsTooltip"] ~= nil then
+                            if not options["SpellsTooltip"] then
+                                upgraded["SpellsTooltip"] = {}
+                            end
+                            upgraded["SpellsTooltip"]["Enabled"] = options["ShowSpellsTooltip"]
+                            upgraded["ShowSpellsTooltip"] = nil
                         end
-                        upgraded["SpellsTooltip"]["Enabled"] = options["ShowSpellsTooltip"]
-                        upgraded["ShowSpellsTooltip"] = nil
-                    end
-                    if options["ChosenProfiles"] ~= nil then
-                        local groupNames = {"Party", "Pets", "Raid", "Raid Pets", "Target"}
-                        local changedProfileNames = {
-                            ["Compact"] = "Default",
-                            ["Compact (Small)"] = "Small",
-                            ["Compact (Short Bar)"] = "Default (Short Bar)"
-                        }
-                        for _, name in ipairs(groupNames) do
-                            local currentlySelected = options["ChosenProfiles"][name]
-                            if changedProfileNames[currentlySelected] then
-                                upgraded["ChosenProfiles"][name] = changedProfileNames[currentlySelected]
+                        if options["ChosenProfiles"] ~= nil then
+                            local groupNames = {"Party", "Pets", "Raid", "Raid Pets", "Target"}
+                            local changedProfileNames = {
+                                ["Compact"] = "Default",
+                                ["Compact (Small)"] = "Small",
+                                ["Compact (Short Bar)"] = "Default (Short Bar)"
+                            }
+                            for _, name in ipairs(groupNames) do
+                                local currentlySelected = options["ChosenProfiles"][name]
+                                if changedProfileNames[currentlySelected] then
+                                    upgraded["ChosenProfiles"][name] = changedProfileNames[currentlySelected]
+                                end
                             end
                         end
+                        upgraded["OptionsVersion"] = self.version
+                        return upgraded
+                    end,
+                    shouldUpgrade = function(self, options)
+                        return options.OptionsVersion < self.version
                     end
-                    upgraded["OptionsVersion"] = self.version
-                    return upgraded
-                end,
-                shouldUpgrade = function(self, options)
-                    return options.OptionsVersion < self.version
-                end
-            },
-            {
-                version = 3,
-                upgrade = function(self, options)
-                    local upgraded = util.CloneTable(options, true)
-                    if options["AutoTarget"] then
-                        upgraded["TargetWhileCasting"] = true
-                        upgraded["TargetAfterCasting"] = true
-                    end
-                    if options["Scripts"] then
-                        local guard = "-- Auto-generated guard to prevent errors in new addon version, remove if you're sure "..
-                            "your script won't produce errors\nif true then return end\n\n"
-                        if options["Scripts"]["OnLoad"] ~= nil and options["Scripts"]["OnLoad"] ~= "" then
-                            upgraded["Scripts"]["OnLoad"] = guard..options["Scripts"]["OnLoad"]
+                },
+                { -- HealersMate -> Puppeteer 1.0.0
+                    version = 3,
+                    upgrade = function(self, options)
+                        local upgraded = util.CloneTable(options, true)
+                        if options["AutoTarget"] then
+                            upgraded["TargetWhileCasting"] = true
+                            upgraded["TargetAfterCasting"] = true
                         end
-                        if options["Scripts"]["OnPostLoad"] ~= nil and options["Scripts"]["OnPostLoad"] ~= "" then
-                            upgraded["Scripts"]["OnPostLoad"] = guard..options["Scripts"]["OnPostLoad"]
+                        if options["Scripts"] then
+                            local guard = "-- Auto-generated guard to prevent errors in new addon version, remove if you're sure "..
+                                "your script won't produce errors\nif true then return end\n\n"
+                            if options["Scripts"]["OnLoad"] ~= nil and options["Scripts"]["OnLoad"] ~= "" then
+                                upgraded["Scripts"]["OnLoad"] = guard..options["Scripts"]["OnLoad"]
+                            end
+                            if options["Scripts"]["OnPostLoad"] ~= nil and options["Scripts"]["OnPostLoad"] ~= "" then
+                                upgraded["Scripts"]["OnPostLoad"] = guard..options["Scripts"]["OnPostLoad"]
+                            end
                         end
+                        upgraded["OptionsVersion"] = self.version
+                        return upgraded
+                    end,
+                    shouldUpgrade = function(self, options)
+                        return options.OptionsVersion < self.version
                     end
-                    upgraded["OptionsVersion"] = self.version
-                    return upgraded
-                end,
-                shouldUpgrade = function(self, options)
-                    return options.OptionsVersion < self.version
-                end
+                },
+                { -- Puppeteer 1.0.5 -> 1.1.0
+                    version = 4,
+                    upgrade = function(self, options)
+                        local upgraded = util.CloneTable(options, true)
+                        if options["Tracking"] then
+                            if options["Tracking"]["MinDistanceTracking"] == 20 then
+                                upgraded["Tracking"]["MinDistanceTracking"] = 0
+                            end
+                            if options["Tracking"]["MaxDistanceTracking"] == 60 then
+                                upgraded["Tracking"]["MaxDistanceTracking"] = 80
+                            end
+                        end
+                        if options["ChosenProfiles"] and not options["ChosenProfiles"]["Enemy"] then
+                            upgraded["ChosenProfiles"]["Enemy"] = "Enemy"
+                        end
+                        upgraded["OptionsVersion"] = self.version
+                        return upgraded
+                    end,
+                    shouldUpgrade = function(self, options)
+                        return options.OptionsVersion < self.version
+                    end
+                }
             }
-        }
-
-        if PTOptions.OptionsVersion and PTOptions.OptionsVersion < OPTIONS_VERSION then
             for _, upgrade in ipairs(optionsUpgrades) do
                 if upgrade:shouldUpgrade(PTOptions) then
                     local prevVersion = PTOptions.OptionsVersion
                     _G.PTOptions = upgrade:upgrade(PTOptions)
-                    DEFAULT_CHAT_FRAME:AddMessage("[Puppeteer] Upgraded options from version "..
-                        prevVersion.." to "..upgrade.version)
+                    Puppeteer.Info("Upgraded options from version "..prevVersion.." to "..upgrade.version)
                 end
             end
         end
