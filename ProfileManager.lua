@@ -276,6 +276,7 @@ function InitializeDefaultProfiles()
         ["MissingHealthInline"] = false,
         ["BarsOffsetY"] = 0,
         ["VerticalSpacing"] = 0,
+        ["BackgroundOpacity"] = 25,
         ["LineOfSightIcon"] = {
             ["PaddingH"] = 4,
             ["Opacity"] = 80,

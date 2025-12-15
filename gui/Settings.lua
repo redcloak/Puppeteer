@@ -943,9 +943,13 @@ function CreateTab_Customize()
         :OnClick(ReloadUI)
 
     local function add(component, offsetY)
+        if component:Type() == "checkbox" then
+            offsetY = (offsetY or 0) - 12
+        end
         layout:offset(0, offsetY or 0):layoutComponent(component)
     end
     local createDropdown = CreateStyleOverrideDropdown
+    local createSlider = CreateStyleOverrideSlider
 
     local barStyles = util.ToArray(Puppeteer.BarStyles)
     table.sort(barStyles)
@@ -961,13 +965,25 @@ function CreateTab_Customize()
     add(createDropdown("Show Debuff Colors On", nil, "ShowDebuffColorsOn", {"Health Bar", "Name", "Health", "Hidden"}))
     add(createDropdown("Sort Units By", "The sorting algorithm for units in a group", "SortUnitsBy", {"ID", "Name", "Class Name"}))
     add(createDropdown("Growth Orientation", "Vertical grows units up and down, Horizontal grows units left and right", "Orientation", {"Vertical", "Horizontal"}))
+    add(createDropdown("Split Raid Into Groups", "If enabled, raids will be split based on the groups", "SplitRaidIntoGroups", {true, false}))
     add(createDropdown("Border Style", "The border of the group", "BorderStyle", {"Tooltip", "Dialog Box", "Borderless"}))
-    add(createDropdown("Max Units In Axis", "The maximum number of units in the growth axis until it must shift down", "MaxUnitsInAxis", {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
-    add(createDropdown("Min Units X", "The minimum amount of unit space to take on the X-axis", "MinUnitsX", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
-    add(createDropdown("Min Units Y", "The minimum amount of unit space to take on the Y-axis", "MinUnitsY", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
-    add(createDropdown("Horizontal Spacing", "The number of pixels between units", "HorizontalSpacing", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
-    add(createDropdown("Vertical Spacing", "The number of pixels between units", "VerticalSpacing", {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}))
-    add(createDropdown("Out of Range Opacity", "How opaque out of range players appear in %", "OutOfRangeOpacity", {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100}))
+    add(createSlider("Background Opacity", "How opaque the background of the frame group is in %", "BackgroundOpacity", 0, 100))
+    add(createSlider("Max Units In Axis", "The maximum number of units in the growth axis until it must shift down", "MaxUnitsInAxis", 1, 20))
+    add(createSlider("Min Units X", "The minimum amount of unit space to take on the X-axis", "MinUnitsX", 0, 20))
+    add(createSlider("Min Units Y", "The minimum amount of unit space to take on the Y-axis", "MinUnitsY", 0, 20))
+    add(createSlider("Horizontal Spacing", "The number of pixels between units", "HorizontalSpacing", 0, 20))
+    add(createSlider("Vertical Spacing", "The number of pixels between units", "VerticalSpacing", 0, 20))
+    add(createSlider("Show Distance At\n(Friendly)", "How many yards to start showing friendly distance at", "ShowDistanceThreshold.Friendly", 0, 100))
+    add(createSlider("Show Distance At\n(Hostile)", "How many yards to start showing hostile distance at", "ShowDistanceThreshold.Hostile", 0, 100))
+    add(createSlider("Out of Range At\n(Friendly)", "How many yards to fade out friendly units", "OutOfRangeThreshold.Friendly", 0, 100))
+    add(createSlider("Out of Range At\n(Hostile)", "How many yards to fade out hostile units", "OutOfRangeThreshold.Hostile", 0, 100))
+    add(createSlider("Out of Range Opacity", "How opaque out of range players appear in %", "OutOfRangeOpacity", 0, 100))
+    local visualIssues = colorize("Adjusting this value may cause visual issues!", 1, 0.4, 0.4)
+    add(createSlider("Unit Frame Width", {"The width of each unit frame", visualIssues}, "Width", 20, 250))
+    add(createSlider("Health Bar Height", {"The height of the health bar", visualIssues}, "HealthBarHeight", 1, 100))
+    add(createSlider("Power Bar Height", {"The height of the power bar", visualIssues}, "PowerBarHeight", 1, 100))
+    add(createSlider("Aura Tracker Height", {"The height of tracked auras", visualIssues}, "AuraTracker.Height", 0, 50))
+    PopulateStyleOverrides()
 end
 
 function UpdateFrameOptions()
@@ -988,7 +1004,7 @@ function CreateStyleOverrideDropdown(text, tooltip, optionLoc, options)
             "initFunc", args.initFunc,
             "func", args.func)
         for _, option in ipairs(options) do
-            addOption("text", option,
+            addOption("text", tostring(option),
                 "option", option,
                 "initFunc", args.initFunc,
                 "func", args.func)
@@ -1003,10 +1019,47 @@ function CreateStyleOverrideDropdown(text, tooltip, optionLoc, options)
         end
     })
     :SetTextUpdater(function(gui)
-        gui:SetText(GetStyleOverride(GetSelectedStyleOverride(), optionLoc) or "Use Style Default")
+        local value = GetStyleOverride(GetSelectedStyleOverride(), optionLoc)
+        gui:SetText(value ~= nil and tostring(value) or "Use Style Default")
     end)
-    StyleOverrideComponents[optionLoc] = dropdown
+    StyleOverrideComponents[optionLoc] = {Updater = function()
+        dropdown:UpdateText()
+    end}
     return dropdown
+end
+
+function CreateStyleOverrideSlider(text, tooltip, optionLoc, min, max)
+    local checkbox = CreateLabeledCheckbox(StyleOverrideContainer, text, tooltip)
+    checkbox:ApplyTooltip(tooltip, colorize("Check to override style default", 1, 0.4, 1))
+    local slider = CreateSlider(StyleOverrideContainer)
+    slider:SetMinMaxValues(min, max)
+    slider:GetSlider():SetNumberedText()
+    slider:GetSlider():HookScript("OnValueChanged", function()
+        SetStyleOverride(GetSelectedStyleOverride(), optionLoc, slider:GetSlider():GetValue())
+    end)
+    slider:SetPoint("LEFT", checkbox, "RIGHT", 5, 0)
+    slider:ApplyTooltip(tooltip)
+    local function Checkbox_OnClick()
+        local value = GetStyleOverride(GetSelectedStyleOverride(), optionLoc)
+        if checkbox:GetChecked() then
+            slider:Show()
+            if value == nil then
+                value = GetStyleOverride(PTProfileManager.GetDefaultProfile(CurrentStyleOverride), optionLoc)
+                SetStyleOverride(GetSelectedStyleOverride(), optionLoc, value)
+            end
+            slider:SetValue(value)
+        else
+            slider:Hide()
+            SetStyleOverride(GetSelectedStyleOverride(), optionLoc, nil)
+        end
+    end
+    checkbox:SetScript("OnClick", Checkbox_OnClick)
+    StyleOverrideComponents[optionLoc] = {Updater = function()
+        local hasOverride = GetStyleOverride(GetSelectedStyleOverride(), optionLoc) ~= nil
+        checkbox:SetChecked(hasOverride)
+        Checkbox_OnClick()
+    end}
+    return checkbox
 end
 
 function GetSelectedStyleOverride()
@@ -1023,8 +1076,8 @@ function SetSelectedStyleOverride(style)
 end
 
 function PopulateStyleOverrides()
-    for _, dropdown in pairs(StyleOverrideComponents) do
-        dropdown:UpdateText()
+    for _, component in pairs(StyleOverrideComponents) do
+        component.Updater()
     end
 end
 

@@ -139,8 +139,8 @@ function PTUnitFrameGroup:Initialize()
     container:ClearAllPoints()
     local anchor, x, y = PuppeteerSettings.GetFramePosition(self.name)
     container:SetPoint(anchor or "TOPLEFT", UIParent, "TOPLEFT", x or 100, y or -100)
-    container:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background"})
-    container:SetBackdropColor(0, 0, 0, 0.5)
+    container:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8X8"})
+    container:SetBackdropColor(0, 0, 0, self:GetProfile().BackgroundOpacity / 100)
 
     container:SetScript("OnMouseDown", function()
         local button = arg1
