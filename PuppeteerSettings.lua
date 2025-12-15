@@ -346,7 +346,7 @@ end
 -- Buffs/debuffs that significantly modify healing
 DefaultTrackedHealingBuffs = {"Amplify Magic", "Dampen Magic", "Master Demonologist"}
 DefaultTrackedHealingDebuffs = {"Mortal Strike", "Wound Poison", "Curse of the Deadwood", "Veil of Shadow", "Gehennas' Curse", 
-    "Necrotic Poison", "Blood Fury", "Necrotic Aura", 
+    "Necrotic Poison", "Blood Fury", "Necrotic Aura", "Brood Affliction: Green",
     "Shadowbane Curse" -- Turtle WoW
 }
 -- Tracked buffs for all classes
@@ -384,18 +384,20 @@ DefaultClassTrackedBuffs = {
 
 -- Tracked debuffs for all classes
 DefaultTrackedDebuffs = {
-    "Forbearance", -- Paladin
+    "Forbearance", "Hammer of Justice", -- Paladin
     "Silence", "Mind Control", -- Priest
     "Death Wish", "Intimidating Shout", -- Warrior
     "Enrage", "Entangling Roots", -- Druid
-    "Frost Nova", -- Mage
-    "Fear", -- Warlock
+    "Frost Nova", "Polymorph", -- Mage
+    "Fear", "Seduction", -- Warlock
     "Recently Bandaged", "Resurrection Sickness", "Ghost", "Net", -- Generic
     "Deafening Screech", "Hooked Net", "Web Explosion", "Chains of Ice", -- Applied by mobs
     "Fungal Spores", -- Stormwrought Castle
     "Hex", -- Zul'Farrak
     "Bellowing Roar", -- Onyxia/Nefarian
+    "Brood Affliction: Bronze", "Corrupted Healing", -- BWL
     "Phantom Scream", "Smoke Bomb", -- Kara10
+    "Acid Spit", "Call of Nightmare", -- Emerald Sanctum
     "Corrupted Mind", "Frost Blast", "Veil of Darkness" -- Naxxramas
 }
 -- Tracked debuffs for specific classes

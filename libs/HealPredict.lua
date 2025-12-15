@@ -458,7 +458,7 @@ eventFrame:SetScript("OnEvent", function()
             if cast then
                 local target = cast["targets"][1]
                 local resses = ResurrectionTargets[target]
-                if resses[caster] then
+                if resses and resses[caster] then
                     compost:Reclaim(resses[caster])
                     resses[caster] = nil
                     

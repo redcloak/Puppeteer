@@ -44,6 +44,7 @@ local trackedCastedAuras = {
     -- Paladin
     ["Blessing of Protection"] = 10,
     ["Hand of Protection"] = 10,
+    ["Divine Protection"] = 8,
     ["Divine Shield"] = 12,
     ["Holy Shield"] = 10,
     ["Bulwark of the Righteous"] = 12,
@@ -109,9 +110,12 @@ local trackedCastedAuras = {
     -- Generic
     ["First Aid"] = 8,
     ["Recently Bandaged"] = 60,
-    ["Rapid Healing"] = 15
+    ["Rapid Healing"] = 15,
+    -- Emerald Sanctum
+    ["Call of Nightmare"] = 10
 }
 PTLocale.Keys(trackedCastedAuras)
+PuppeteerSettings.TrackedCastedAuras = trackedCastedAuras
 
 -- Auras to start the timer for even though they weren't directly casted
 local additionalAuras = {
