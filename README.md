@@ -76,12 +76,12 @@ Tentative, this could change at any time.
 | Question/Issue | Answer |
 | - | - |
 | **Focus/Enemy Frames Don't Work** | If you are using the PerfBoost mod, you must turn off the `Filter GUID Events` setting. |
-| **Casting on other players doesn't work** | If you are using the CallOfElements addon, there is an issue with that addon that prevents Puppeteer from casting properly. To fix it, install [this version of CallOfElements](https://github.com/laytya/CallOfElements). |
+| **Casting on other players doesn't work** | You likely have another addon that is interfering with Puppeteer's ability to cast directly. Try disabling other addons until you find the culprit. CallOfElements is known to cause this issue. To fix it, use [this version of CallOfElements](https://github.com/MarcelineVQ/CallOfElements). |
 </details>
 
 ### Credits
 
 - [i2ichardt](https://github.com/i2ichardt) - Original HealersMate Author
 - Turtle WoW Community - Answers to addon development questions
-- [Shagu](https://shagu.org/) - Utility functions, providing a wealth of research material, and general inspiration
+- [Shagu](https://github.com/shagu) - Utility functions, providing a wealth of research material, and general inspiration
 - @blondieart (Discord) - Created the art at the top of this page
