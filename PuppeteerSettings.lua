@@ -131,8 +131,8 @@ function SetDefaults()
                 ["ShowItemCount"] = false
             },
             ["ShowAuraTimesAt"] = {
-                ["Short"] = 5, -- <1 min
-                ["Medium"] = 10, -- <=2 min
+                ["Short"] = 10, -- <1 min
+                ["Medium"] = 15, -- <=2 min
                 ["Long"] = 60 * 2 -- >2 min
             },
             ["Tracking"] = {
@@ -373,7 +373,7 @@ DefaultTrackedHealingDebuffs = {"Mortal Strike", "Wound Poison", "Curse of the D
 DefaultTrackedBuffs = {
     "Blessing of Protection", "Hand of Protection", "Divine Protection", "Divine Shield", "Divine Intervention", -- Paladin
         "Bulwark of the Righteous", "Blessing of Sacrifice", "Hand of Sacrifice",
-    "Power Infusion", "Spirit of Redemption", "Inner Focus", "Abolish Disease", "Power Word: Shield", "Mind Control", -- Priest
+    "Power Infusion", "Spirit of Redemption", "Inner Focus", "Abolish Disease", "Power Word: Shield", "Mind Control", "Shadowform", -- Priest
     "Shield Wall", "Recklessness", "Last Stand", -- Warrior
     "Evasion", "Vanish", -- Rogue
     "Deterrence", "Feign Death", "Mend Pet", -- Hunter
@@ -397,7 +397,7 @@ DefaultClassTrackedBuffs = {
     ["DRUID"] = {"Gift of the Wild", "Mark of the Wild", "Thorns", "Rejuvenation", "Regrowth", "Blooming Bud"},
     ["SHAMAN"] = {"Water Walking", "Healing Way", "Ancestral Fortitude"},
     ["MAGE"] = {"Arcane Brilliance", "Arcane Intellect", "Frost Armor", "Ice Armor", "Mage Armor"},
-    ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield", "Consume Shadows"},
+    ["WARLOCK"] = {"Demon Armor", "Demon Skin", "Unending Breath", "Shadow Ward", "Fire Shield", "Felstone", "Spellstone", "Firestone", "Wrathstone", "Voidstone", "Detect Greater Invisibility", "Detect Invisibility"},
     ["HUNTER"] = {"Rapid Fire", "Quick Shots", "Quick Strikes", "Aspect of the Pack", 
         "Aspect of the Wild", "Bestial Wrath", "Feed Pet Effect"}
 }
